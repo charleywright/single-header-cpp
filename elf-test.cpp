@@ -31,7 +31,11 @@ int main(int argc, char *argv[])
  << "  Version: " << header.e_version << "\n" \
  << "  Entry point address: " << header.e_entry << "\n" \
  << "  Flags: " << header.e_flags << "\n" \
- << "  Size of this header: " << header.e_ehsize << "\n";
+ << "  Size of this header: " << header.e_ehsize << "\n" \
+ << "  Is 32-bit: " << lib.is_32_bit() << "\n" \
+ << "  Is 64-bit: " << lib.is_64_bit() << "\n" \
+ << "  Is little-endian: " << lib.is_little_endian() << "\n" \
+ << "  Is big-endian: " << lib.is_big_endian() << "\n";
 
   const auto &program_headers = lib.get_program_headers();
   std::cout << "Program headers: Start=" << header.e_phoff << " Count=" << header.e_phnum << " Size=" << header.e_phentsize << "\n";

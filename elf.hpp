@@ -719,6 +719,26 @@ namespace elf
           return this->section_headers;
         }
 
+        bool is_little_endian() const
+        {
+          return this->header.e_ident.ei_data == ::elf::elf_ident::ELFDATA2LSB;
+        }
+
+        bool is_big_endian() const
+        {
+          return this->header.e_ident.ei_data == ::elf::elf_ident::ELFDATA2MSB;
+        }
+
+        bool is_32_bit() const
+        {
+          return this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS32;
+        }
+
+        bool is_64_bit() const
+        {
+          return this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64;
+        }
+
     private:
         const std::filesystem::path path;
         std::string last_error;
