@@ -32,6 +32,7 @@
  * https://refspecs.linuxbase.org/elf/elf.pdf
  * https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf
  * https://github.com/bminor/glibc/blob/master/elf/elf.h
+ * https://docs.oracle.com/cd/E53394_01/pdf/E54813.pdf
  *
  * TODO:
  * - Properly handle endianness
@@ -679,15 +680,14 @@ namespace elf
     public:
         explicit elf_file(std::filesystem::path path) : path(std::move(path))
         {
-          std::ifstream binary_file = this->open_file();
-          if (!binary_file.is_open())
+          if (!this->open_file())
           {
             return;
           }
           if (
-                  !this->read_elf_header(binary_file) ||
-                  !this->read_program_headers(binary_file) ||
-                  !this->read_section_headers(binary_file)
+                  !this->read_elf_header() ||
+                  !this->read_program_headers() ||
+                  !this->read_section_headers()
                   )
           {
             return;
@@ -739,39 +739,180 @@ namespace elf
           return this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64;
         }
 
+        std::ifstream &get_binary_file()
+        {
+          return this->binary_file;
+        }
+
+        bool parse_dynamic_segment()
+        {
+          for (const auto &program_header: this->program_headers)
+          {
+            if (program_header.p_type == ::elf::elf_program_header::PT_DYNAMIC)
+            {
+              if (!this->binary_file.is_open())
+              {
+                this->last_error = "Binary file is not open";
+                return false;
+              }
+              this->binary_file.clear();
+              this->binary_file.seekg(static_cast<std::streamoff>(program_header.p_offset));
+              if (this->is_64_bit())
+              {
+                std::size_t dynamic_entry_size = sizeof(::elf::types::Elf64_Dyn);
+                std::size_t dynamic_entry_count = program_header.p_filesz / dynamic_entry_size;
+                if (program_header.p_filesz % dynamic_entry_size != 0)
+                {
+                  this->last_error = "Invalid dynamic segment size";
+                  return false;
+                }
+                this->dynamic_entries.resize(dynamic_entry_count);
+                this->binary_file.read(reinterpret_cast<char *>(this->dynamic_entries.data()), static_cast<std::streamsize>(program_header.p_filesz));
+                if (this->binary_file.gcount() != program_header.p_filesz)
+                {
+                  this->last_error = "Failed to read dynamic segment";
+                  return false;
+                }
+              } else if (this->is_32_bit())
+              {
+                std::size_t dynamic_entry_size = sizeof(::elf::types::Elf32_Dyn);
+                std::size_t dynamic_entry_count = program_header.p_filesz / dynamic_entry_size;
+                if (program_header.p_filesz % dynamic_entry_size != 0)
+                {
+                  this->last_error = "Invalid dynamic segment size";
+                  return false;
+                }
+                this->dynamic_entries.resize(dynamic_entry_count);
+                std::vector<::elf::types::Elf32_Dyn> real_dynamic_segment(dynamic_entry_count);
+                this->binary_file.read(reinterpret_cast<char *>(real_dynamic_segment.data()), static_cast<std::streamsize>(program_header.p_filesz));
+                if (this->binary_file.gcount() != program_header.p_filesz)
+                {
+                  this->last_error = "Failed to read dynamic segment";
+                  return false;
+                }
+                for (std::size_t i = 0; i < dynamic_entry_count; i++)
+                {
+                  this->dynamic_entries[i].d_tag = real_dynamic_segment[i].d_tag;
+                  this->dynamic_entries[i].d_un.d_val = real_dynamic_segment[i].d_un.d_val;
+                }
+              } else
+              {
+                return false;
+              }
+
+              std::uintptr_t dynamic_string_table_offset = 0;
+              std::uint64_t dynamic_string_table_length = 0;
+              for (const auto &dynamic_entry: this->dynamic_entries)
+              {
+                if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRTAB)
+                {
+                  dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
+                } else if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRSZ)
+                {
+                  dynamic_string_table_length = dynamic_entry.d_un.d_val;
+                }
+              }
+              if (dynamic_string_table_offset == 0 || dynamic_string_table_length == 0)
+              {
+                this->last_error = "Failed to find dynamic string table";
+                return false;
+              }
+              this->dynamic_segment_string_table.resize(dynamic_string_table_length);
+              this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
+              this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
+              if (this->binary_file.gcount() != dynamic_string_table_length)
+              {
+                this->last_error = "Failed to read dynamic string table";
+                return false;
+              }
+
+              for (const auto &dynamic_entry: this->dynamic_entries)
+              {
+                switch (dynamic_entry.d_tag)
+                {
+                  case ::elf::elf_dynamic::DT_SONAME:
+                  {
+                    this->so_name = this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val;
+                    break;
+                  }
+                  case ::elf::elf_dynamic::DT_NEEDED:
+                  {
+                    this->needed_libraries.emplace_back(this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val);
+                    break;
+                  }
+                }
+              }
+
+              return true;
+            }
+          }
+          return false;
+        }
+
+        const std::vector<::elf::elf_dynamic> &get_dynamic_entries() const
+        {
+          return this->dynamic_entries;
+        }
+
+        const std::vector<char> &get_dynamic_string_table() const
+        {
+          return this->dynamic_segment_string_table;
+        }
+
+        const char *get_so_name() const
+        {
+          return this->so_name;
+        }
+
+        const std::vector<const char *> &get_needed_libraries() const
+        {
+          return this->needed_libraries;
+        }
+
     private:
         const std::filesystem::path path;
+        std::ifstream binary_file;
         std::string last_error;
 
         ::elf::elf_header header;
         std::vector<::elf::elf_program_header> program_headers;
         std::vector<::elf::elf_section_header> section_headers;
         std::vector<char> section_header_string_table;
+        std::vector<::elf::elf_dynamic> dynamic_entries;
+        std::vector<char> dynamic_segment_string_table;
+        const char *so_name = nullptr;
+        std::vector<const char *> needed_libraries;
 
     private:
-        std::ifstream open_file()
+        bool open_file()
         {
-          std::ifstream binary_file;
-
           if (!std::filesystem::exists(this->path))
           {
             this->last_error = "File does not exist";
-            return binary_file;
+            return false;
           }
 
-          binary_file.open(this->path, std::ios::binary | std::ios::in);
-          if (!binary_file.is_open())
+          this->binary_file.open(this->path, std::ios::binary | std::ios::in);
+          if (!this->binary_file.is_open())
           {
             this->last_error = "Failed to open library file";
+            return false;
           }
-          return binary_file;
+
+          return true;
         }
 
-        bool read_elf_header(std::ifstream &binary_file)
+        bool read_elf_header()
         {
-          binary_file.seekg(0);
-          binary_file.read(reinterpret_cast<char *>(&this->header.e_ident), sizeof(this->header.e_ident));
-          if (binary_file.gcount() != sizeof(this->header.e_ident))
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+          this->binary_file.clear();
+          this->binary_file.seekg(0);
+          this->binary_file.read(reinterpret_cast<char *>(&this->header.e_ident), sizeof(this->header.e_ident));
+          if (this->binary_file.gcount() != sizeof(this->header.e_ident))
           {
             this->last_error = "Failed to read ELF identification";
             return false;
@@ -779,9 +920,9 @@ namespace elf
 
           if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
           {
-            binary_file.seekg(0);
-            binary_file.read(reinterpret_cast<char *>(&this->header), sizeof(this->header));
-            if (binary_file.gcount() != sizeof(this->header))
+            this->binary_file.seekg(0);
+            this->binary_file.read(reinterpret_cast<char *>(&this->header), sizeof(this->header));
+            if (this->binary_file.gcount() != sizeof(this->header))
             {
               this->last_error = "Failed to read ELF header";
               return false;
@@ -789,9 +930,9 @@ namespace elf
           } else if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS32)
           {
             ::elf::types::Elf32_Ehdr real_header{0};
-            binary_file.seekg(0);
-            binary_file.read(reinterpret_cast<char *>(&real_header), sizeof(real_header));
-            if (binary_file.gcount() != sizeof(real_header))
+            this->binary_file.seekg(0);
+            this->binary_file.read(reinterpret_cast<char *>(&real_header), sizeof(real_header));
+            if (this->binary_file.gcount() != sizeof(real_header))
             {
               this->last_error = "Failed to read ELF header";
               return false;
@@ -818,9 +959,15 @@ namespace elf
           return true;
         }
 
-        bool read_program_headers(std::ifstream &binary_file)
+        bool read_program_headers()
         {
-          binary_file.seekg(static_cast<std::streamoff>(this->header.e_phoff));
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+          this->binary_file.clear();
+          this->binary_file.seekg(static_cast<std::streamoff>(this->header.e_phoff));
           this->program_headers.resize(this->header.e_phnum);
 
           if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
@@ -831,8 +978,8 @@ namespace elf
               return false;
             }
             auto program_headers_size = static_cast<std::streamsize>(this->header.e_phnum * this->header.e_phentsize);
-            binary_file.read(reinterpret_cast<char *>(this->program_headers.data()), program_headers_size);
-            if (binary_file.gcount() != program_headers_size)
+            this->binary_file.read(reinterpret_cast<char *>(this->program_headers.data()), program_headers_size);
+            if (this->binary_file.gcount() != program_headers_size)
             {
               this->last_error = "Failed to read program headers";
               return false;
@@ -846,8 +993,8 @@ namespace elf
             }
             std::vector<::elf::types::Elf32_Phdr> real_program_headers(this->header.e_phnum);
             auto real_program_headers_size = static_cast<std::streamsize>(this->header.e_phnum * this->header.e_phentsize);
-            binary_file.read(reinterpret_cast<char *>(real_program_headers.data()), real_program_headers_size);
-            if (binary_file.gcount() != real_program_headers_size)
+            this->binary_file.read(reinterpret_cast<char *>(real_program_headers.data()), real_program_headers_size);
+            if (this->binary_file.gcount() != real_program_headers_size)
             {
               this->last_error = "Failed to read program headers";
               return false;
@@ -868,9 +1015,15 @@ namespace elf
           return true;
         }
 
-        bool read_section_headers(std::ifstream &binary_file)
+        bool read_section_headers()
         {
-          binary_file.seekg(static_cast<std::streamoff>(this->header.e_shoff));
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+          this->binary_file.clear();
+          this->binary_file.seekg(static_cast<std::streamoff>(this->header.e_shoff));
           this->section_headers.resize(this->header.e_shnum);
 
           if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
@@ -882,8 +1035,8 @@ namespace elf
             }
             for (std::size_t i = 0; i < this->header.e_shnum; i++)
             {
-              binary_file.read(reinterpret_cast<char *>(&this->section_headers[i]), this->header.e_shentsize);
-              if (binary_file.gcount() != this->header.e_shentsize)
+              this->binary_file.read(reinterpret_cast<char *>(&this->section_headers[i]), this->header.e_shentsize);
+              if (this->binary_file.gcount() != this->header.e_shentsize)
               {
                 this->last_error = "Failed to read section header";
                 return false;
@@ -898,8 +1051,8 @@ namespace elf
             }
             std::vector<::elf::types::Elf32_Shdr> real_section_headers(this->header.e_shnum);
             const auto real_section_headers_size = static_cast<std::streamsize>(this->header.e_shnum * this->header.e_shentsize);
-            binary_file.read(reinterpret_cast<char *>(real_section_headers.data()), real_section_headers_size);
-            if (binary_file.gcount() != real_section_headers_size)
+            this->binary_file.read(reinterpret_cast<char *>(real_section_headers.data()), real_section_headers_size);
+            if (this->binary_file.gcount() != real_section_headers_size)
             {
               this->last_error = "Failed to read section headers";
               return false;
@@ -928,9 +1081,9 @@ namespace elf
           this->section_header_string_table.resize(section_header_string_table_header.sh_size);
           const auto section_header_string_table_offset = static_cast<std::streamoff>(section_header_string_table_header.sh_offset);
           const auto section_header_string_table_size = static_cast<std::streamsize>(section_header_string_table_header.sh_size);
-          binary_file.seekg(section_header_string_table_offset);
-          binary_file.read(this->section_header_string_table.data(), section_header_string_table_size);
-          if (binary_file.gcount() != section_header_string_table_size)
+          this->binary_file.seekg(section_header_string_table_offset);
+          this->binary_file.read(this->section_header_string_table.data(), section_header_string_table_size);
+          if (this->binary_file.gcount() != section_header_string_table_size)
           {
             this->last_error = "Failed to read section header string table";
             return false;

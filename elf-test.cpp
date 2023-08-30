@@ -72,4 +72,17 @@ int main(int argc, char *argv[])
  << "    Address alignment: " << section_header.sh_addralign << "\n" \
  << "    Entry size: " << section_header.sh_entsize << "\n";
   }
+
+  if (!lib.parse_dynamic_segment())
+  {
+    std::cerr << "Failed to parse dynamic segment: " << lib.error_message() << std::endl;
+    return 1;
+  }
+
+  std::cout << "Dynamic segment:\n" \
+ << "  SO Name: " << lib.get_so_name() << "\n";
+  for (const auto &needed_lib: lib.get_needed_libraries())
+  {
+    std::cout << "  Needed lib: " << needed_lib << "\n";
+  }
 }
