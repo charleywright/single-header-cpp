@@ -466,6 +466,8 @@ namespace elf
         ::elf::byte st_other;     /* Symbol visibility */
         std::uint16_t st_shndx;   /* Section index */
         const char *st_name_str;  /* Resolved symbol name */
+
+        static constexpr std::uint32_t STN_UNDEF = 0;  /* End of chain identifier */
     } elf_symbol;
 
     typedef struct elf_dynamic
@@ -778,6 +780,32 @@ namespace elf
         } Elf64_Dyn;
     }
 
+    inline std::uint_fast32_t elf_hash(const char *name)
+    {
+      std::uint_fast32_t h = 0, g;
+      auto *uname = reinterpret_cast<const unsigned char *>(name);
+      while (*uname)
+      {
+        h = (h << 4) + *uname++;
+        if (g = h & 0xf0000000; g)
+          h ^= g >> 24;
+        h &= ~g;
+      }
+      return h;
+    }
+
+    // https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
+    // https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
+    inline uint_fast32_t gnu_hash(const char *s)
+    {
+      uint_fast32_t h = 5381;
+
+      for (unsigned char c = *s; c != '\0'; c = *++s)
+        h = h * 33 + c;
+
+      return h & 0xffffffff;
+    }
+
     class elf_file
     {
     public:
@@ -1044,6 +1072,8 @@ namespace elf
             }
           }
 
+          this->parse_hash_tables();
+
           return true;
         }
 
@@ -1072,6 +1102,25 @@ namespace elf
           return this->dynamic_symbols;
         }
 
+        std::uint64_t get_symbol(const char *name)
+        {
+          const std::uint32_t hash = elf_hash(name);
+          std::uint32_t index = this->hash_buckets[hash % this->hash_buckets.size()];
+          while (true)
+          {
+            const auto &symbol = this->dynamic_symbols.at(index);
+            if (std::strcmp(symbol.st_name_str, name) == 0)
+            {
+              return symbol.st_value;
+            }
+            index = this->hash_chains.at(index);
+            if (index == ::elf::elf_symbol::STN_UNDEF)
+            {
+              return 0;
+            }
+          }
+        }
+
     private:
         const std::filesystem::path path;
         std::ifstream binary_file;
@@ -1086,6 +1135,9 @@ namespace elf
         const char *so_name = nullptr;
         std::vector<const char *> needed_libraries;
         std::vector<elf::elf_symbol> dynamic_symbols;
+
+        std::vector<std::uint32_t> hash_buckets;
+        std::vector<std::uint32_t> hash_chains;
 
     private:
         bool open_file()
@@ -1300,31 +1352,69 @@ namespace elf
 
           return true;
         }
+
+        bool parse_hash_tables()
+        {
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+
+          for (const auto &section_header: this->section_headers)
+          {
+            switch (section_header.sh_type)
+            {
+              case ::elf::elf_section_header::SHT_HASH:
+              {
+                typedef struct hash_table_header
+                {
+                    std::uint32_t nbucket;
+                    std::uint32_t nchain;
+                } hash_table_header;
+
+                hash_table_header table_header;
+                this->binary_file.seekg(static_cast<std::streamoff>(section_header.sh_offset));
+                this->binary_file.read(reinterpret_cast<char *>(&table_header), sizeof(table_header));
+                if (this->binary_file.gcount() != sizeof(table_header))
+                {
+                  this->last_error = "Failed to read hash table header";
+                  return false;
+                }
+
+                if (table_header.nbucket == 0 || table_header.nchain == 0)
+                {
+                  this->last_error = "Invalid hash table header";
+                  return false;
+                }
+
+                this->hash_buckets.resize(table_header.nbucket);
+                this->binary_file.read(reinterpret_cast<char *>(this->hash_buckets.data()),
+                                       static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.nbucket));
+                if (this->binary_file.gcount() != sizeof(std::uint32_t) * table_header.nbucket)
+                {
+                  this->last_error = "Failed to read hash table buckets";
+                  return false;
+                }
+                this->hash_chains.resize(table_header.nchain);
+                this->binary_file.read(reinterpret_cast<char *>(this->hash_chains.data()),
+                                       static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.nchain));
+                if (this->binary_file.gcount() != sizeof(std::uint32_t) * table_header.nchain)
+                {
+                  this->last_error = "Failed to read hash table chains";
+                  return false;
+                }
+
+                break;
+              }
+              case ::elf::elf_section_header::SHT_GNU_HASH:
+              {
+                break;
+              }
+            }
+          }
+
+          return true;
+        }
     };
-
-    inline std::uint_fast32_t elf_hash(const char *name)
-    {
-      std::uint_fast32_t h = 0, g;
-      auto *uname = reinterpret_cast<const unsigned char *>(name);
-      while (*uname)
-      {
-        h = (h << 4) + *uname++;
-        if (g = h & 0xf0000000; g)
-          h ^= g >> 24;
-        h &= ~g;
-      }
-      return h;
-    }
-
-    // https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
-    // https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
-    inline uint_fast32_t gnu_hash(const char *s)
-    {
-      uint_fast32_t h = 5381;
-
-      for (unsigned char c = *s; c != '\0'; c = *++s)
-        h = h * 33 + c;
-
-      return h & 0xffffffff;
-    }
 }

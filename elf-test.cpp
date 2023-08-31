@@ -86,4 +86,6 @@ int main(int argc, char *argv[])
     std::cout << "  Needed lib: " << needed_lib << "\n";
   }
   std::cout << "  Dynamic symbols count: " << lib.get_dynamic_symbols().size() << "\n";
+  std::cout << "  Undefined symbol: " << lib.get_symbol("thisisnotasymbol 1337") << "\n";
+  std::cout << "  FairPlaySAPSign: " << lib.get_symbol("Fc3vhtJDvr") << "\n";
 }
