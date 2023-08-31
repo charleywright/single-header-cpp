@@ -22,6 +22,8 @@
 #include <cstdint>
 #include <variant>
 #include <byteswap.h>
+#include <cstring>
+#include <algorithm>
 
 /*
  * References:
@@ -458,12 +460,12 @@ namespace elf
     typedef struct elf_symbol
     {
         std::uint32_t st_name;    /* Symbol name (string table index) */
-        const char *st_name_str;  /* Resolved symbol name */
         std::uint64_t st_value;   /* Symbol value */
         std::uint64_t st_size;    /* Symbol size */
         ::elf::byte st_info;      /* Symbol type and binding */
         ::elf::byte st_other;     /* Symbol visibility */
         std::uint16_t st_shndx;   /* Section index */
+        const char *st_name_str;  /* Resolved symbol name */
     } elf_symbol;
 
     typedef struct elf_dynamic
@@ -704,6 +706,11 @@ namespace elf
           return this->last_error;
         }
 
+        void clear_error()
+        {
+          this->last_error = "";
+        }
+
         const ::elf::elf_header &get_header() const
         {
           return this->header;
@@ -746,107 +753,190 @@ namespace elf
 
         bool parse_dynamic_segment()
         {
-          for (const auto &program_header: this->program_headers)
+          const auto dynamic_header = std::find_if(this->program_headers.begin(), this->program_headers.end(),
+                                                   [](const elf::elf_program_header &program_header) {
+                                                       return program_header.p_type == ::elf::elf_program_header::PT_DYNAMIC;
+                                                   });
+          if (dynamic_header == this->program_headers.end())
           {
-            if (program_header.p_type == ::elf::elf_program_header::PT_DYNAMIC)
+            return false;
+          }
+
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+          this->binary_file.clear();
+          this->binary_file.seekg(static_cast<std::streamoff>(dynamic_header->p_offset));
+          if (this->is_64_bit())
+          {
+            std::size_t dynamic_entry_size = sizeof(::elf::types::Elf64_Dyn);
+            std::size_t dynamic_entry_count = dynamic_header->p_filesz / dynamic_entry_size;
+            if (dynamic_header->p_filesz % dynamic_entry_size != 0)
             {
-              if (!this->binary_file.is_open())
-              {
-                this->last_error = "Binary file is not open";
-                return false;
-              }
-              this->binary_file.clear();
-              this->binary_file.seekg(static_cast<std::streamoff>(program_header.p_offset));
-              if (this->is_64_bit())
-              {
-                std::size_t dynamic_entry_size = sizeof(::elf::types::Elf64_Dyn);
-                std::size_t dynamic_entry_count = program_header.p_filesz / dynamic_entry_size;
-                if (program_header.p_filesz % dynamic_entry_size != 0)
-                {
-                  this->last_error = "Invalid dynamic segment size";
-                  return false;
-                }
-                this->dynamic_entries.resize(dynamic_entry_count);
-                this->binary_file.read(reinterpret_cast<char *>(this->dynamic_entries.data()), static_cast<std::streamsize>(program_header.p_filesz));
-                if (this->binary_file.gcount() != program_header.p_filesz)
-                {
-                  this->last_error = "Failed to read dynamic segment";
-                  return false;
-                }
-              } else if (this->is_32_bit())
-              {
-                std::size_t dynamic_entry_size = sizeof(::elf::types::Elf32_Dyn);
-                std::size_t dynamic_entry_count = program_header.p_filesz / dynamic_entry_size;
-                if (program_header.p_filesz % dynamic_entry_size != 0)
-                {
-                  this->last_error = "Invalid dynamic segment size";
-                  return false;
-                }
-                this->dynamic_entries.resize(dynamic_entry_count);
-                std::vector<::elf::types::Elf32_Dyn> real_dynamic_segment(dynamic_entry_count);
-                this->binary_file.read(reinterpret_cast<char *>(real_dynamic_segment.data()), static_cast<std::streamsize>(program_header.p_filesz));
-                if (this->binary_file.gcount() != program_header.p_filesz)
-                {
-                  this->last_error = "Failed to read dynamic segment";
-                  return false;
-                }
-                for (std::size_t i = 0; i < dynamic_entry_count; i++)
-                {
-                  this->dynamic_entries[i].d_tag = real_dynamic_segment[i].d_tag;
-                  this->dynamic_entries[i].d_un.d_val = real_dynamic_segment[i].d_un.d_val;
-                }
-              } else
-              {
-                return false;
-              }
+              this->last_error = "Invalid dynamic segment size";
+              return false;
+            }
+            this->dynamic_entries.resize(dynamic_entry_count);
+            this->binary_file.read(reinterpret_cast<char *>(this->dynamic_entries.data()), static_cast<std::streamsize>(dynamic_header->p_filesz));
+            if (this->binary_file.gcount() != dynamic_header->p_filesz)
+            {
+              this->last_error = "Failed to read dynamic segment";
+              return false;
+            }
+          } else if (this->is_32_bit())
+          {
+            std::size_t dynamic_entry_size = sizeof(::elf::types::Elf32_Dyn);
+            std::size_t dynamic_entry_count = dynamic_header->p_filesz / dynamic_entry_size;
+            if (dynamic_header->p_filesz % dynamic_entry_size != 0)
+            {
+              this->last_error = "Invalid dynamic segment size";
+              return false;
+            }
+            this->dynamic_entries.resize(dynamic_entry_count);
+            std::vector<::elf::types::Elf32_Dyn> real_dynamic_segment(dynamic_entry_count);
+            this->binary_file.read(reinterpret_cast<char *>(real_dynamic_segment.data()), static_cast<std::streamsize>(dynamic_header->p_filesz));
+            if (this->binary_file.gcount() != dynamic_header->p_filesz)
+            {
+              this->last_error = "Failed to read dynamic segment";
+              return false;
+            }
+            for (std::size_t i = 0; i < dynamic_entry_count; i++)
+            {
+              this->dynamic_entries[i].d_tag = real_dynamic_segment[i].d_tag;
+              this->dynamic_entries[i].d_un.d_val = real_dynamic_segment[i].d_un.d_val;
+            }
+          } else
+          {
+            return false;
+          }
 
-              std::uintptr_t dynamic_string_table_offset = 0;
-              std::uint64_t dynamic_string_table_length = 0;
-              for (const auto &dynamic_entry: this->dynamic_entries)
-              {
-                if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRTAB)
-                {
-                  dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
-                } else if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRSZ)
-                {
-                  dynamic_string_table_length = dynamic_entry.d_un.d_val;
-                }
-              }
-              if (dynamic_string_table_offset == 0 || dynamic_string_table_length == 0)
-              {
-                this->last_error = "Failed to find dynamic string table";
-                return false;
-              }
-              this->dynamic_segment_string_table.resize(dynamic_string_table_length);
-              this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
-              this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
-              if (this->binary_file.gcount() != dynamic_string_table_length)
-              {
-                this->last_error = "Failed to read dynamic string table";
-                return false;
-              }
-
-              for (const auto &dynamic_entry: this->dynamic_entries)
-              {
-                switch (dynamic_entry.d_tag)
-                {
-                  case ::elf::elf_dynamic::DT_SONAME:
-                  {
-                    this->so_name = this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val;
-                    break;
-                  }
-                  case ::elf::elf_dynamic::DT_NEEDED:
-                  {
-                    this->needed_libraries.emplace_back(this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val);
-                    break;
-                  }
-                }
-              }
-
-              return true;
+          std::uintptr_t dynamic_string_table_offset = 0;
+          std::uint64_t dynamic_string_table_length = 0;
+          for (const auto &dynamic_entry: this->dynamic_entries)
+          {
+            if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRTAB)
+            {
+              dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
+            } else if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRSZ)
+            {
+              dynamic_string_table_length = dynamic_entry.d_un.d_val;
             }
           }
-          return false;
+          if (dynamic_string_table_offset == 0 || dynamic_string_table_length == 0)
+          {
+            this->last_error = "Failed to find dynamic string table";
+            return false;
+          }
+          this->dynamic_segment_string_table.resize(dynamic_string_table_length);
+          this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
+          this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
+          if (this->binary_file.gcount() != dynamic_string_table_length)
+          {
+            this->last_error = "Failed to read dynamic string table";
+            return false;
+          }
+
+          std::uint64_t symbol_table_offset = 0, symbol_table_entry_size = 0;
+          for (const auto &dynamic_entry: this->dynamic_entries)
+          {
+            switch (dynamic_entry.d_tag)
+            {
+              case ::elf::elf_dynamic::DT_SONAME:
+              {
+                this->so_name = this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val;
+                break;
+              }
+              case ::elf::elf_dynamic::DT_NEEDED:
+              {
+                this->needed_libraries.emplace_back(this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val);
+                break;
+              }
+              case ::elf::elf_dynamic::DT_SYMTAB:
+              {
+                symbol_table_offset = dynamic_entry.d_un.d_ptr;
+                break;
+              }
+              case ::elf::elf_dynamic::DT_SYMENT:
+              {
+                symbol_table_entry_size = dynamic_entry.d_un.d_val;
+                break;
+              }
+            }
+          }
+
+          if (symbol_table_offset == 0 || symbol_table_entry_size == 0)
+          {
+            this->last_error = "Failed to find symbol table";
+            return false;
+          }
+
+          const auto symbol_table_header = std::find_if(this->section_headers.begin(), this->section_headers.end(),
+                                                        [](const elf::elf_section_header &section_header) {
+                                                            return section_header.sh_type == ::elf::elf_section_header::SHT_DYNSYM;
+                                                        });
+          if (symbol_table_header == this->section_headers.end())
+          {
+            this->last_error = "Failed to find dynamic symbol table";
+            return false;
+          }
+          if (symbol_table_offset != symbol_table_header->sh_offset)
+          {
+            this->last_error = "Symbol table offsets don't match";
+            return false;
+          }
+          std::uint64_t symbol_table_entry_count = symbol_table_header->sh_size / symbol_table_entry_size;
+
+          if (this->is_64_bit())
+          {
+            if (symbol_table_entry_size != sizeof(::elf::types::Elf64_Sym))
+            {
+              this->last_error = "Invalid symbol table entry size";
+              return false;
+            }
+            this->dynamic_symbols.resize(symbol_table_entry_count);
+            this->binary_file.seekg(static_cast<std::streamoff>(symbol_table_offset));
+            for (std::size_t i = 0; i < symbol_table_entry_count; i++)
+            {
+              this->binary_file.read(reinterpret_cast<char *>(&this->dynamic_symbols[i]), static_cast<std::streamsize>(symbol_table_entry_size));
+              if (this->binary_file.gcount() != symbol_table_entry_size)
+              {
+                this->last_error = "Failed to read dynamic symbol";
+                return false;
+              }
+              this->dynamic_symbols[i].st_name_str = this->dynamic_segment_string_table.data() + this->dynamic_symbols[i].st_name;
+            }
+          } else
+          {
+            if (symbol_table_entry_size != sizeof(::elf::types::Elf32_Sym))
+            {
+              this->last_error = "Invalid symbol table entry size";
+              return false;
+            }
+            this->dynamic_symbols.resize(symbol_table_entry_count);
+            std::vector<::elf::types::Elf32_Sym> real_dynamic_symbols(symbol_table_entry_count);
+            const auto real_symbol_table_size = static_cast<std::streamsize>(symbol_table_entry_size * symbol_table_entry_count);
+            this->binary_file.seekg(static_cast<std::streamoff>(symbol_table_offset));
+            this->binary_file.read(reinterpret_cast<char *>(real_dynamic_symbols.data()), real_symbol_table_size);
+            if (this->binary_file.gcount() != real_symbol_table_size)
+            {
+              this->last_error = "Failed to read dynamic symbols";
+              return false;
+            }
+            for (std::size_t i = 0; i < symbol_table_entry_count; i++)
+            {
+              this->dynamic_symbols[i].st_name = real_dynamic_symbols[i].st_name;
+              this->dynamic_symbols[i].st_info = real_dynamic_symbols[i].st_info;
+              this->dynamic_symbols[i].st_other = real_dynamic_symbols[i].st_other;
+              this->dynamic_symbols[i].st_shndx = real_dynamic_symbols[i].st_shndx;
+              this->dynamic_symbols[i].st_value = real_dynamic_symbols[i].st_value;
+              this->dynamic_symbols[i].st_size = real_dynamic_symbols[i].st_size;
+              this->dynamic_symbols[i].st_name_str = this->dynamic_segment_string_table.data() + this->dynamic_symbols[i].st_name;
+            }
+          }
+
+          return true;
         }
 
         const std::vector<::elf::elf_dynamic> &get_dynamic_entries() const
@@ -869,6 +959,11 @@ namespace elf
           return this->needed_libraries;
         }
 
+        const std::vector<elf::elf_symbol> &get_dynamic_symbols() const
+        {
+          return this->dynamic_symbols;
+        }
+
     private:
         const std::filesystem::path path;
         std::ifstream binary_file;
@@ -882,6 +977,7 @@ namespace elf
         std::vector<char> dynamic_segment_string_table;
         const char *so_name = nullptr;
         std::vector<const char *> needed_libraries;
+        std::vector<elf::elf_symbol> dynamic_symbols;
 
     private:
         bool open_file()

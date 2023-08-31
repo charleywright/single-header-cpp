@@ -85,4 +85,5 @@ int main(int argc, char *argv[])
   {
     std::cout << "  Needed lib: " << needed_lib << "\n";
   }
+  std::cout << "  Dynamic symbols count: " << lib.get_dynamic_symbols().size() << "\n";
 }
