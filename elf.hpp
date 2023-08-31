@@ -35,9 +35,13 @@
  * https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf
  * https://github.com/bminor/glibc/blob/master/elf/elf.h
  * https://docs.oracle.com/cd/E53394_01/pdf/E54813.pdf
+ * https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
+ * https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
+ * https://akkadia.org/drepper/dsohowto.pdf
  *
  * TODO:
  * - Properly handle endianness
+ * - Evaluate std::variant instead of always storing 64-bit values
  */
 
 namespace elf
@@ -1138,6 +1142,10 @@ namespace elf
 
         std::vector<std::uint32_t> hash_buckets;
         std::vector<std::uint32_t> hash_chains;
+        std::vector<std::uint32_t> gnu_hash_buckets;
+        std::vector<std::uint32_t> gnu_hash_values;
+        std::uint32_t gnu_hash_bloom_shift = 0;
+        std::vector<std::uint64_t> gnu_hash_bloom_words;
 
     private:
         bool open_file()
@@ -1409,6 +1417,73 @@ namespace elf
               }
               case ::elf::elf_section_header::SHT_GNU_HASH:
               {
+                typedef struct gnu_hash_table_header
+                {
+                    std::uint32_t nbuckets;
+                    std::uint32_t omitted_symbols_count;
+                    std::uint32_t bloom_size;
+                    std::uint32_t bloom_shift;
+                } gnu_hash_table_header;
+
+                gnu_hash_table_header table_header;
+                this->binary_file.seekg(static_cast<std::streamoff>(section_header.sh_offset));
+                this->binary_file.read(reinterpret_cast<char*>(&table_header), sizeof(table_header));
+                if(this->binary_file.gcount() != sizeof(table_header))
+                {
+                  this->last_error = "Failed to read gnu hash table header";
+                  return false;
+                }
+                this->gnu_hash_bloom_shift = table_header.bloom_shift;
+
+                if(this->is_64_bit())
+                {
+                  this->gnu_hash_bloom_words.resize(table_header.bloom_size);
+                  const auto bloom_words_size = static_cast<std::streamsize>(sizeof(std::uint64_t) * table_header.bloom_size);
+                  this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_bloom_words.data()), bloom_words_size);
+                  if(this->binary_file.gcount() != bloom_words_size)
+                  {
+                    this->last_error = "Failed to read gnu hash table bloom words";
+                    return false;
+                  }
+                } else if(this->is_32_bit())
+                {
+                  std::vector<std::uint32_t> real_bloom_words(table_header.bloom_size);
+                  const auto real_bloom_words_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.bloom_size);
+                  this->binary_file.read(reinterpret_cast<char*>(real_bloom_words.data()), real_bloom_words_size);
+                  if(this->binary_file.gcount() != real_bloom_words_size)
+                  {
+                    this->last_error = "Failed to read gnu hash table bloom words";
+                    return false;
+                  }
+                  this->gnu_hash_bloom_words.resize(table_header.bloom_size);
+                  for(std::size_t i = 0; i < table_header.bloom_size; i++)
+                  {
+                    this->gnu_hash_bloom_words[i] = real_bloom_words[i];
+                  }
+                } else {
+                  this->last_error = "Invalid ELF class";
+                  return false;
+                }
+
+                this->gnu_hash_buckets.resize(table_header.nbuckets);
+                const auto buckets_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.nbuckets);
+                this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_buckets.data()), buckets_size);
+                if(this->binary_file.gcount() != buckets_size)
+                {
+                  this->last_error = "Failed to read gnu hash table buckets";
+                  return false;
+                }
+
+                std::size_t hash_values_count = this->dynamic_symbols.size() - table_header.omitted_symbols_count;
+                const auto hash_values_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * hash_values_count);
+                this->gnu_hash_values.resize(hash_values_count);
+                this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_values.data()), hash_values_size);
+                if(this->binary_file.gcount() != hash_values_size)
+                {
+                  this->last_error = "Failed to read gnu hash table values";
+                  return false;
+                }
+
                 break;
               }
             }
