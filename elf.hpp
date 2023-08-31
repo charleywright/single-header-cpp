@@ -470,52 +470,112 @@ namespace elf
 
     typedef struct elf_dynamic
     {
-        static constexpr std::int64_t DT_NULL = 0;              /* Marks end of dynamic section */
-        static constexpr std::int64_t DT_NEEDED = 1;            /* Name of needed library */
-        static constexpr std::int64_t DT_PLTRELSZ = 2;          /* Size in bytes of all PLT relocations */
-        static constexpr std::int64_t DT_PLTGOT = 3;            /* Processor defined value relating to PLT/GOT */
-        static constexpr std::int64_t DT_HASH = 4;              /* Address of the symbol hash table */
-        static constexpr std::int64_t DT_STRTAB = 5;            /* Address of the dynamic string table */
-        static constexpr std::int64_t DT_SYMTAB = 6;            /* Address of the dynamic symbol table */
-        static constexpr std::int64_t DT_RELA = 7;              /* Address of a relocation table with Elf*_Rela entries */
-        static constexpr std::int64_t DT_RELASZ = 8;            /* Total size in bytes of the DT_RELA relocation table */
-        static constexpr std::int64_t DT_RELAENT = 9;           /* Size in bytes of each DT_RELA relocation entry */
-        static constexpr std::int64_t DT_STRSZ = 10;            /* Size in bytes of the string table */
-        static constexpr std::int64_t DT_SYMENT = 11;           /* Size in bytes of each symbol table entry */
-        static constexpr std::int64_t DT_INIT = 12;             /* Address of the initialization function */
-        static constexpr std::int64_t DT_FINI = 13;             /* Address of the termination function */
-        static constexpr std::int64_t DT_SONAME = 14;           /* Shared object name (string table index) */
-        static constexpr std::int64_t DT_RPATH = 15;            /* Library search path (string table index) */
-        static constexpr std::int64_t DT_SYMBOLIC = 16;         /* Indicates "symbolic" linking */
-        static constexpr std::int64_t DT_REL = 17;              /* Address of a relocation table with Elf*_Rel entries */
-        static constexpr std::int64_t DT_RELSZ = 18;            /* Total size in bytes of the DT_REL relocation table */
-        static constexpr std::int64_t DT_RELENT = 19;           /* Size in bytes of each DT_REL relocation entry */
-        static constexpr std::int64_t DT_PLTREL = 20;           /* Type of relocation used for PLT */
-        static constexpr std::int64_t DT_DEBUG = 21;            /* Reserved for debugger */
-        static constexpr std::int64_t DT_TEXTREL = 22;          /* Object contains text relocations (non-writable segment) */
-        static constexpr std::int64_t DT_JMPREL = 23;           /* Address of the relocations associated with the PLT */
-        static constexpr std::int64_t DT_BIND_NOW = 24;         /* Process all relocations before execution */
-        static constexpr std::int64_t DT_INIT_ARRAY = 25;       /* Array of initialization functions */
-        static constexpr std::int64_t DT_FINI_ARRAY = 26;       /* Array of termination functions */
-        static constexpr std::int64_t DT_INIT_ARRAYSZ = 27;     /* Size of arrays in DT_INIT_ARRAY */
-        static constexpr std::int64_t DT_FINI_ARRAYSZ = 28;     /* Size of arrays in DT_FINI_ARRAY */
-        static constexpr std::int64_t DT_RUNPATH = 29;          /* Library search paths */
-        static constexpr std::int64_t DT_FLAGS = 30;            /* Flags for the object being loaded */
-        static constexpr std::int64_t DT_ENCODING = 32;         /* Values from here to DT_LOOS if even use d_ptr or odd uses d_val */
-        static constexpr std::int64_t DT_PREINIT_ARRAY = 32;    /* Array of pre-initialization functions */
-        static constexpr std::int64_t DT_PREINIT_ARRAYSZ = 33;  /* Size of array of pre-init functions */
+        static constexpr std::int64_t DT_NULL = 0;               /* Marks end of dynamic section */
+        static constexpr std::int64_t DT_NEEDED = 1;             /* Name of needed library */
+        static constexpr std::int64_t DT_PLTRELSZ = 2;           /* Size in bytes of all PLT relocations */
+        static constexpr std::int64_t DT_PLTGOT = 3;             /* Processor defined value relating to PLT/GOT */
+        static constexpr std::int64_t DT_HASH = 4;               /* Address of the symbol hash table */
+        static constexpr std::int64_t DT_STRTAB = 5;             /* Address of the dynamic string table */
+        static constexpr std::int64_t DT_SYMTAB = 6;             /* Address of the dynamic symbol table */
+        static constexpr std::int64_t DT_RELA = 7;               /* Address of a relocation table with Elf*_Rela entries */
+        static constexpr std::int64_t DT_RELASZ = 8;             /* Total size in bytes of the DT_RELA relocation table */
+        static constexpr std::int64_t DT_RELAENT = 9;            /* Size in bytes of each DT_RELA relocation entry */
+        static constexpr std::int64_t DT_STRSZ = 10;             /* Size in bytes of the string table */
+        static constexpr std::int64_t DT_SYMENT = 11;            /* Size in bytes of each symbol table entry */
+        static constexpr std::int64_t DT_INIT = 12;              /* Address of the initialization function */
+        static constexpr std::int64_t DT_FINI = 13;              /* Address of the termination function */
+        static constexpr std::int64_t DT_SONAME = 14;            /* Shared object name (string table index) */
+        static constexpr std::int64_t DT_RPATH = 15;             /* Library search path (string table index) */
+        static constexpr std::int64_t DT_SYMBOLIC = 16;          /* Indicates "symbolic" linking */
+        static constexpr std::int64_t DT_REL = 17;               /* Address of a relocation table with Elf*_Rel entries */
+        static constexpr std::int64_t DT_RELSZ = 18;             /* Total size in bytes of the DT_REL relocation table */
+        static constexpr std::int64_t DT_RELENT = 19;            /* Size in bytes of each DT_REL relocation entry */
+        static constexpr std::int64_t DT_PLTREL = 20;            /* Type of relocation used for PLT */
+        static constexpr std::int64_t DT_DEBUG = 21;             /* Reserved for debugger */
+        static constexpr std::int64_t DT_TEXTREL = 22;           /* Object contains text relocations (non-writable segment) */
+        static constexpr std::int64_t DT_JMPREL = 23;            /* Address of the relocations associated with the PLT */
+        static constexpr std::int64_t DT_BIND_NOW = 24;          /* Process all relocations before execution */
+        static constexpr std::int64_t DT_INIT_ARRAY = 25;        /* Array of initialization functions */
+        static constexpr std::int64_t DT_FINI_ARRAY = 26;        /* Array of termination functions */
+        static constexpr std::int64_t DT_INIT_ARRAYSZ = 27;      /* Size of arrays in DT_INIT_ARRAY */
+        static constexpr std::int64_t DT_FINI_ARRAYSZ = 28;      /* Size of arrays in DT_FINI_ARRAY */
+        static constexpr std::int64_t DT_RUNPATH = 29;           /* Library search paths */
+        static constexpr std::int64_t DT_FLAGS = 30;             /* Flags for the object being loaded */
+        static constexpr std::int64_t DT_ENCODING = 32;          /* Values from here to DT_LOOS if even use d_ptr or odd uses d_val */
+        static constexpr std::int64_t DT_PREINIT_ARRAY = 32;     /* Array of pre-initialization functions */
+        static constexpr std::int64_t DT_PREINIT_ARRAYSZ = 33;   /* Size of array of pre-init functions */
 
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L908-L912
-        static constexpr std::int64_t DT_SYMTAB_SHNDX = 34;     /* Address of SYMTAB_SHNDX section */
-        static constexpr std::int64_t DT_RELRSZ = 35;           /* Total size of RELR relative relocations */
-        static constexpr std::int64_t DT_RELR = 36;             /* Address of RELR relative relocations */
-        static constexpr std::int64_t DT_RELRENT = 37;          /* Size of one RELR relative relocaction */
-        static constexpr std::int64_t DT_NUM = 38;              /* Number used */
+        static constexpr std::int64_t DT_SYMTAB_SHNDX = 34;      /* Address of SYMTAB_SHNDX section */
+        static constexpr std::int64_t DT_RELRSZ = 35;            /* Total size of RELR relative relocations */
+        static constexpr std::int64_t DT_RELR = 36;              /* Address of RELR relative relocations */
+        static constexpr std::int64_t DT_RELRENT = 37;           /* Size of one RELR relative relocaction */
+        static constexpr std::int64_t DT_NUM = 38;               /* Number used */
 
-        static constexpr std::int64_t DT_LOOS = 0x6000000D;     /* Start of OS-specific */
-        static constexpr std::int64_t DT_HIOS = 0x6ffff000;     /* End of OS-specific */
-        static constexpr std::int64_t DT_LOPROC = 0x70000000;   /* Start of processor-specific */
-        static constexpr std::int64_t DT_HIPROC = 0x7fffffff;   /* End of processor-specific */
+        static constexpr std::int64_t DT_LOOS = 0x6000000D;      /* Start of OS-specific */
+        static constexpr std::int64_t DT_HIOS = 0x6ffff000;      /* End of OS-specific */
+        static constexpr std::int64_t DT_LOPROC = 0x70000000;    /* Start of processor-specific */
+        static constexpr std::int64_t DT_HIPROC = 0x7fffffff;    /* End of processor-specific */
+
+        // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L919-L983
+        /* DT_* entries which fall between DT_VALRNGHI & DT_VALRNGLO use the
+         Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's
+         approach.  */
+        static constexpr std::int64_t DT_VALRNGLO = 0x6ffffd00;
+        static constexpr std::int64_t DT_GNU_PRELINKED = 0x6ffffdf5;   /* Prelinking timestamp */
+        static constexpr std::int64_t DT_GNU_CONFLICTSZ = 0x6ffffdf6;  /* Size of conflict section */
+        static constexpr std::int64_t DT_GNU_LIBLISTSZ = 0x6ffffdf7;   /* Size of library list */
+        static constexpr std::int64_t DT_CHECKSUM = 0x6ffffdf8;
+        static constexpr std::int64_t DT_PLTPADSZ = 0x6ffffdf9;
+        static constexpr std::int64_t DT_MOVEENT = 0x6ffffdfa;
+        static constexpr std::int64_t DT_MOVESZ = 0x6ffffdfb;
+        static constexpr std::int64_t DT_FEATURE_1 = 0x6ffffdfc;       /* Feature selection (DTF_*).  */
+        static constexpr std::int64_t DT_POSFLAG_1 = 0x6ffffdfd;       /* Flags for DT_* entries, effecting the following DT_* entry.  */
+        static constexpr std::int64_t DT_SYMINSZ = 0x6ffffdfe;         /* Size of syminfo table (in bytes) */
+        static constexpr std::int64_t DT_SYMINENT = 0x6ffffdff;        /* Entry size of syminfo */
+        static constexpr std::int64_t DT_VALRNGHI = 0x6ffffdff;
+        static constexpr std::int64_t DT_VALNUM = 12;
+
+        /* DT_* entries which fall between DT_ADDRRNGHI & DT_ADDRRNGLO use the
+           Dyn.d_un.d_ptr field of the Elf*_Dyn structure.
+
+         If any adjustment is made to the ELF object after it has been
+         built these entries will need to be adjusted.  */
+        static constexpr std::int64_t DT_ADDRRNGLO = 0x6ffffe00;
+        static constexpr std::int64_t DT_GNU_HASH = 0x6ffffef5;      /* GNU-style hash table.  */
+        static constexpr std::int64_t DT_TLSDESC_PLT = 0x6ffffef6;
+        static constexpr std::int64_t DT_TLSDESC_GOT = 0x6ffffef7;
+        static constexpr std::int64_t DT_GNU_CONFLICT = 0x6ffffef8;  /* Start of conflict section */
+        static constexpr std::int64_t DT_GNU_LIBLIST = 0x6ffffef9;   /* Library list */
+        static constexpr std::int64_t DT_CONFIG = 0x6ffffefa;        /* Configuration information.  */
+        static constexpr std::int64_t DT_DEPAUDIT = 0x6ffffefb;      /* Dependency auditing.  */
+        static constexpr std::int64_t DT_AUDIT = 0x6ffffefc;         /* Object auditing.  */
+        static constexpr std::int64_t DT_PLTPAD = 0x6ffffefd;        /* PLT padding.  */
+        static constexpr std::int64_t DT_MOVETAB = 0x6ffffefe;       /* Move table.  */
+        static constexpr std::int64_t DT_SYMINFO = 0x6ffffeff;       /* Syminfo table.  */
+        static constexpr std::int64_t DT_ADDRRNGHI = 0x6ffffeff;
+        static constexpr std::int64_t DT_ADDRNUM = 11;
+
+        /* The versioning entry types.  The next are defined as part of the
+           GNU extension.  */
+        static constexpr std::int64_t DT_VERSYM = 0x6ffffff0;
+        static constexpr std::int64_t DT_RELACOUNT = 0x6ffffff9;
+        static constexpr std::int64_t DT_RELCOUNT = 0x6ffffffa;
+
+        /* These were chosen by Sun.  */
+        static constexpr std::int64_t DT_FLAGS_1 = 0x6ffffffb;     /* State flags, see DF_1_* below.  */
+        static constexpr std::int64_t DT_VERDEF = 0x6ffffffc;      /* Address of version definition table */
+        static constexpr std::int64_t DT_VERDEFNUM = 0x6ffffffd;   /* Number of version definitions */
+        static constexpr std::int64_t DT_VERNEED = 0x6ffffffe;     /* Address of table with needed versions */
+        static constexpr std::int64_t DT_VERNEEDNUM = 0x6fffffff;  /* Number of needed versions */
+        static constexpr std::int64_t DT_VERSIONTAGNUM = 16;
+
+        /* Sun added these machine-independent extensions in the "processor-specific"
+           range.  Be compatible.  */
+        static constexpr std::int64_t DT_AUXILIARY = 0x7ffffffd;  /* Shared object to load before self */
+        static constexpr std::int64_t DT_FILTER = 0x7fffffff;     /* Shared object to get values from */
+        static constexpr std::int64_t DT_EXTRANUM = 3;
+
         std::int64_t d_tag;       /* Entry type */
         union
         {
@@ -529,6 +589,47 @@ namespace elf
         static constexpr std::uint64_t DF_TEXTREL = 0x4;      /* Object contains text relocations (non-writable segment) */
         static constexpr std::uint64_t DF_BIND_NOW = 0x8;     /* No lazy binding for this object */
         static constexpr std::uint64_t DF_STATIC_TLS = 0x10;  /* Module uses the static TLS model */
+
+        // DT_FLAGS_1 values - https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L992-L1033
+        static constexpr std::uint64_t DF_1_NOW = 0x00000001;         /* Set RTLD_NOW for this object.  */
+        static constexpr std::uint64_t DF_1_GLOBAL = 0x00000002;      /* Set RTLD_GLOBAL for this object.  */
+        static constexpr std::uint64_t DF_1_GROUP = 0x00000004;       /* Set RTLD_GROUP for this object.  */
+        static constexpr std::uint64_t DF_1_NODELETE = 0x00000008;    /* Set RTLD_NODELETE for this object.*/
+        static constexpr std::uint64_t DF_1_LOADFLTR = 0x00000010;    /* Trigger filtee loading at runtime.*/
+        static constexpr std::uint64_t DF_1_INITFIRST = 0x00000020;   /* Set RTLD_INITFIRST for this object*/
+        static constexpr std::uint64_t DF_1_NOOPEN = 0x00000040;      /* Set RTLD_NOOPEN for this object.  */
+        static constexpr std::uint64_t DF_1_ORIGIN = 0x00000080;      /* $ORIGIN must be handled.  */
+        static constexpr std::uint64_t DF_1_DIRECT = 0x00000100;      /* Direct binding enabled.  */
+        static constexpr std::uint64_t DF_1_TRANS = 0x00000200;
+        static constexpr std::uint64_t DF_1_INTERPOSE = 0x00000400;   /* Object is used to interpose.  */
+        static constexpr std::uint64_t DF_1_NODEFLIB = 0x00000800;    /* Ignore default lib search path.  */
+        static constexpr std::uint64_t DF_1_NODUMP = 0x00001000;      /* Object can't be dldump'ed.  */
+        static constexpr std::uint64_t DF_1_CONFALT = 0x00002000;     /* Configuration alternative created.*/
+        static constexpr std::uint64_t DF_1_ENDFILTEE = 0x00004000;   /* Filtee terminates filters search. */
+        static constexpr std::uint64_t DF_1_DISPRELDNE = 0x00008000;  /* Disp reloc applied at build time. */
+        static constexpr std::uint64_t DF_1_DISPRELPND = 0x00010000;  /* Disp reloc applied at run-time.  */
+        static constexpr std::uint64_t DF_1_NODIRECT = 0x00020000;    /* Object has no-direct binding. */
+        static constexpr std::uint64_t DF_1_IGNMULDEF = 0x00040000;
+        static constexpr std::uint64_t DF_1_NOKSYMS = 0x00080000;
+        static constexpr std::uint64_t DF_1_NOHDR = 0x00100000;
+        static constexpr std::uint64_t DF_1_EDITED = 0x00200000;      /* Object is modified after built.  */
+        static constexpr std::uint64_t DF_1_NORELOC = 0x00400000;
+        static constexpr std::uint64_t DF_1_SYMINTPOSE = 0x00800000;  /* Object has individual interposers.  */
+        static constexpr std::uint64_t DF_1_GLOBAUDIT = 0x01000000;   /* Global auditing required.  */
+        static constexpr std::uint64_t DF_1_SINGLETON = 0x02000000;   /* Singleton symbols are used.  */
+        static constexpr std::uint64_t DF_1_STUB = 0x04000000;
+        static constexpr std::uint64_t DF_1_PIE = 0x08000000;
+        static constexpr std::uint64_t DF_1_KMOD = 0x10000000;
+        static constexpr std::uint64_t DF_1_WEAKFILTER = 0x20000000;
+        static constexpr std::uint64_t DF_1_NOCOMMON = 0x40000000;
+
+        /* Flags for the feature selection in DT_FEATURE_1.  */
+        static constexpr std::uint64_t DTF_1_PARINIT = 0x00000001;
+        static constexpr std::uint64_t DTF_1_CONFEXP = 0x00000002;
+
+        /* Flags in the DT_POSFLAG_1 entry effecting only the next DT_* entry.  */
+        static constexpr std::uint64_t DF_P1_LAZYLOAD = 0x00000001;   /* Lazyload following object.  */
+        static constexpr std::uint64_t DF_P1_GROUPPERM = 0x00000002;  /* Symbols from next object are not generally available.  */
     } elf_dynamic;
 
     // Non-architecture agnostic types
@@ -874,7 +975,7 @@ namespace elf
           const auto dynamic_string_table_base = reinterpret_cast<std::uintptr_t>(this->dynamic_segment_string_table.data());
 
           this->so_name = dynamic_string_table_base + this->so_name;
-          for(auto &needed : this->needed_libraries)
+          for (auto &needed: this->needed_libraries)
           {
             needed = dynamic_string_table_base + needed;
           }
@@ -976,7 +1077,7 @@ namespace elf
         std::ifstream binary_file;
         std::string last_error;
 
-        ::elf::elf_header header;
+        ::elf::elf_header header{0};
         std::vector<::elf::elf_program_header> program_headers;
         std::vector<::elf::elf_section_header> section_headers;
         std::vector<char> section_header_string_table;
