@@ -814,43 +814,20 @@ namespace elf
 
           std::uintptr_t dynamic_string_table_offset = 0;
           std::uint64_t dynamic_string_table_length = 0;
-          for (const auto &dynamic_entry: this->dynamic_entries)
-          {
-            if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRTAB)
-            {
-              dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
-            } else if (dynamic_entry.d_tag == ::elf::elf_dynamic::DT_STRSZ)
-            {
-              dynamic_string_table_length = dynamic_entry.d_un.d_val;
-            }
-          }
-          if (dynamic_string_table_offset == 0 || dynamic_string_table_length == 0)
-          {
-            this->last_error = "Failed to find dynamic string table";
-            return false;
-          }
-          this->dynamic_segment_string_table.resize(dynamic_string_table_length);
-          this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
-          this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
-          if (this->binary_file.gcount() != dynamic_string_table_length)
-          {
-            this->last_error = "Failed to read dynamic string table";
-            return false;
-          }
-
-          std::uint64_t symbol_table_offset = 0, symbol_table_entry_size = 0;
+          std::uintptr_t symbol_table_offset = 0;
+          std::uint64_t symbol_table_entry_size = 0;
           for (const auto &dynamic_entry: this->dynamic_entries)
           {
             switch (dynamic_entry.d_tag)
             {
-              case ::elf::elf_dynamic::DT_SONAME:
+              case ::elf::elf_dynamic::DT_STRTAB:
               {
-                this->so_name = this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val;
+                dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
                 break;
               }
-              case ::elf::elf_dynamic::DT_NEEDED:
+              case ::elf::elf_dynamic::DT_STRSZ:
               {
-                this->needed_libraries.emplace_back(this->dynamic_segment_string_table.data() + dynamic_entry.d_un.d_val);
+                dynamic_string_table_length = dynamic_entry.d_un.d_val;
                 break;
               }
               case ::elf::elf_dynamic::DT_SYMTAB:
@@ -863,13 +840,43 @@ namespace elf
                 symbol_table_entry_size = dynamic_entry.d_un.d_val;
                 break;
               }
+              case ::elf::elf_dynamic::DT_SONAME:
+              {
+                this->so_name = reinterpret_cast<const char *>(reinterpret_cast<std::uintptr_t>(dynamic_entry.d_un.d_val));
+                break;
+              }
+              case ::elf::elf_dynamic::DT_NEEDED:
+              {
+                this->needed_libraries.emplace_back(reinterpret_cast<const char *>(reinterpret_cast<std::uintptr_t>(dynamic_entry.d_un.d_val)));
+                break;
+              }
             }
           }
-
+          if (dynamic_string_table_offset == 0 || dynamic_string_table_length == 0)
+          {
+            this->last_error = "Failed to find dynamic string table";
+            return false;
+          }
           if (symbol_table_offset == 0 || symbol_table_entry_size == 0)
           {
             this->last_error = "Failed to find symbol table";
             return false;
+          }
+
+          this->dynamic_segment_string_table.resize(dynamic_string_table_length);
+          this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
+          this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
+          if (this->binary_file.gcount() != dynamic_string_table_length)
+          {
+            this->last_error = "Failed to read dynamic string table";
+            return false;
+          }
+          const auto dynamic_string_table_base = reinterpret_cast<std::uintptr_t>(this->dynamic_segment_string_table.data());
+
+          this->so_name = dynamic_string_table_base + this->so_name;
+          for(auto &needed : this->needed_libraries)
+          {
+            needed = dynamic_string_table_base + needed;
           }
 
           const auto symbol_table_header = std::find_if(this->section_headers.begin(), this->section_headers.end(),
