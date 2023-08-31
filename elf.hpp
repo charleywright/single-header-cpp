@@ -1108,21 +1108,12 @@ namespace elf
 
         std::uint64_t get_symbol(const char *name)
         {
-          const std::uint32_t hash = elf_hash(name);
-          std::uint32_t index = this->hash_buckets[hash % this->hash_buckets.size()];
-          while (true)
+          std::uint64_t symbol = this->lookup_gnu_symbol(name);
+          if (symbol == 0)
           {
-            const auto &symbol = this->dynamic_symbols.at(index);
-            if (std::strcmp(symbol.st_name_str, name) == 0)
-            {
-              return symbol.st_value;
-            }
-            index = this->hash_chains.at(index);
-            if (index == ::elf::elf_symbol::STN_UNDEF)
-            {
-              return 0;
-            }
+            symbol = this->lookup_elf_symbol(name);
           }
+          return symbol;
         }
 
     private:
@@ -1145,6 +1136,7 @@ namespace elf
         std::vector<std::uint32_t> gnu_hash_buckets;
         std::vector<std::uint32_t> gnu_hash_values;
         std::uint32_t gnu_hash_bloom_shift = 0;
+        std::uint32_t gnu_hash_omitted_symbols_count = 0;
         std::vector<std::uint64_t> gnu_hash_bloom_words;
 
     private:
@@ -1427,58 +1419,60 @@ namespace elf
 
                 gnu_hash_table_header table_header;
                 this->binary_file.seekg(static_cast<std::streamoff>(section_header.sh_offset));
-                this->binary_file.read(reinterpret_cast<char*>(&table_header), sizeof(table_header));
-                if(this->binary_file.gcount() != sizeof(table_header))
+                this->binary_file.read(reinterpret_cast<char *>(&table_header), sizeof(table_header));
+                if (this->binary_file.gcount() != sizeof(table_header))
                 {
                   this->last_error = "Failed to read gnu hash table header";
                   return false;
                 }
                 this->gnu_hash_bloom_shift = table_header.bloom_shift;
+                this->gnu_hash_omitted_symbols_count = table_header.omitted_symbols_count;
 
-                if(this->is_64_bit())
+                if (this->is_64_bit())
                 {
                   this->gnu_hash_bloom_words.resize(table_header.bloom_size);
                   const auto bloom_words_size = static_cast<std::streamsize>(sizeof(std::uint64_t) * table_header.bloom_size);
-                  this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_bloom_words.data()), bloom_words_size);
-                  if(this->binary_file.gcount() != bloom_words_size)
+                  this->binary_file.read(reinterpret_cast<char *>(this->gnu_hash_bloom_words.data()), bloom_words_size);
+                  if (this->binary_file.gcount() != bloom_words_size)
                   {
                     this->last_error = "Failed to read gnu hash table bloom words";
                     return false;
                   }
-                } else if(this->is_32_bit())
+                } else if (this->is_32_bit())
                 {
                   std::vector<std::uint32_t> real_bloom_words(table_header.bloom_size);
                   const auto real_bloom_words_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.bloom_size);
-                  this->binary_file.read(reinterpret_cast<char*>(real_bloom_words.data()), real_bloom_words_size);
-                  if(this->binary_file.gcount() != real_bloom_words_size)
+                  this->binary_file.read(reinterpret_cast<char *>(real_bloom_words.data()), real_bloom_words_size);
+                  if (this->binary_file.gcount() != real_bloom_words_size)
                   {
                     this->last_error = "Failed to read gnu hash table bloom words";
                     return false;
                   }
                   this->gnu_hash_bloom_words.resize(table_header.bloom_size);
-                  for(std::size_t i = 0; i < table_header.bloom_size; i++)
+                  for (std::size_t i = 0; i < table_header.bloom_size; i++)
                   {
                     this->gnu_hash_bloom_words[i] = real_bloom_words[i];
                   }
-                } else {
+                } else
+                {
                   this->last_error = "Invalid ELF class";
                   return false;
                 }
 
                 this->gnu_hash_buckets.resize(table_header.nbuckets);
                 const auto buckets_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * table_header.nbuckets);
-                this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_buckets.data()), buckets_size);
-                if(this->binary_file.gcount() != buckets_size)
+                this->binary_file.read(reinterpret_cast<char *>(this->gnu_hash_buckets.data()), buckets_size);
+                if (this->binary_file.gcount() != buckets_size)
                 {
                   this->last_error = "Failed to read gnu hash table buckets";
                   return false;
                 }
 
-                std::size_t hash_values_count = this->dynamic_symbols.size() - table_header.omitted_symbols_count;
+                std::size_t hash_values_count = this->dynamic_symbols.size() - this->gnu_hash_omitted_symbols_count;
                 const auto hash_values_size = static_cast<std::streamsize>(sizeof(std::uint32_t) * hash_values_count);
                 this->gnu_hash_values.resize(hash_values_count);
-                this->binary_file.read(reinterpret_cast<char*>(this->gnu_hash_values.data()), hash_values_size);
-                if(this->binary_file.gcount() != hash_values_size)
+                this->binary_file.read(reinterpret_cast<char *>(this->gnu_hash_values.data()), hash_values_size);
+                if (this->binary_file.gcount() != hash_values_size)
                 {
                   this->last_error = "Failed to read gnu hash table values";
                   return false;
@@ -1490,6 +1484,82 @@ namespace elf
           }
 
           return true;
+        }
+
+        std::uint64_t lookup_elf_symbol(const char *name)
+        {
+          if (this->hash_buckets.empty())
+          {
+            return 0;
+          }
+          const std::uint32_t hash = elf_hash(name);
+          std::uint32_t index = this->hash_buckets[hash % this->hash_buckets.size()];
+          while (true)
+          {
+            if (index == ::elf::elf_symbol::STN_UNDEF)
+            {
+              return 0;
+            }
+            const auto &symbol = this->dynamic_symbols.at(index);
+            if (std::strcmp(symbol.st_name_str, name) == 0)
+            {
+              return symbol.st_value;
+            }
+            index = this->hash_chains.at(index);
+          }
+        }
+
+        std::uint64_t lookup_gnu_symbol(const char *name)
+        {
+          if (this->gnu_hash_buckets.empty())
+          {
+            return 0;
+          }
+          std::uint32_t hash1 = gnu_hash(name);
+          std::uint32_t hash2 = hash1 >> this->gnu_hash_bloom_shift;
+          const std::uint64_t bloom_word_size = sizeof(std::uint64_t) * 8;
+          const std::uint64_t bitmask = (static_cast<std::uint64_t>(1) << (hash1 % bloom_word_size)) |
+                                        (static_cast<std::uint64_t>(1) << (hash2 % bloom_word_size));
+          const std::uint64_t bloom_size_bitmask = this->gnu_hash_bloom_words.size() - 1;
+
+          if ((this->gnu_hash_bloom_words.at((hash1 / bloom_word_size) & bloom_size_bitmask) & bitmask) != bitmask)
+          {
+            return 0;
+          }
+
+          std::size_t start_idx = this->gnu_hash_buckets.at(hash1 % this->gnu_hash_buckets.size());
+          if (start_idx == ::elf::elf_symbol::STN_UNDEF)
+          {
+            return 0;
+          }
+
+          auto current_symbol = this->dynamic_symbols.begin();
+          std::advance(current_symbol, start_idx);
+          auto current_value = this->gnu_hash_values.begin();
+          std::advance(current_value, start_idx - this->gnu_hash_omitted_symbols_count);
+
+          hash1 &= ~1;
+          for (;; current_symbol++, current_value++)
+          {
+            hash2 = *current_value;
+
+            if (hash1 != (hash2 & ~1))
+            {
+              continue;
+            }
+
+            if (std::strcmp(current_symbol->st_name_str, name) == 0)
+            {
+              return current_symbol->st_value;
+            }
+
+            if (hash2 & 1)
+            {
+              return 0;
+            }
+          }
+
+          return 0;
         }
     };
 }
