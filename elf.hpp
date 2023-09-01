@@ -1106,10 +1106,10 @@ namespace elf
           return this->dynamic_symbols;
         }
 
-        std::uint64_t get_symbol(const char *name)
+        std::vector<::elf::elf_symbol>::const_iterator get_symbol(const char *name) const
         {
-          std::uint64_t symbol = this->lookup_gnu_symbol(name);
-          if (symbol == 0)
+          auto symbol = this->lookup_gnu_symbol(name);
+          if (symbol == this->dynamic_symbols.cend())
           {
             symbol = this->lookup_elf_symbol(name);
           }
@@ -1486,11 +1486,11 @@ namespace elf
           return true;
         }
 
-        std::uint64_t lookup_elf_symbol(const char *name)
+        std::vector<::elf::elf_symbol>::const_iterator lookup_elf_symbol(const char *name) const
         {
           if (this->hash_buckets.empty())
           {
-            return 0;
+            return this->dynamic_symbols.cend();
           }
           const std::uint32_t hash = elf_hash(name);
           std::uint32_t index = this->hash_buckets[hash % this->hash_buckets.size()];
@@ -1498,22 +1498,23 @@ namespace elf
           {
             if (index == ::elf::elf_symbol::STN_UNDEF)
             {
-              return 0;
+              return this->dynamic_symbols.cend();
             }
-            const auto &symbol = this->dynamic_symbols.at(index);
-            if (std::strcmp(symbol.st_name_str, name) == 0)
+            auto symbol_it = this->dynamic_symbols.cbegin();
+            std::advance(symbol_it, index);
+            if (std::strcmp(symbol_it->st_name_str, name) == 0)
             {
-              return symbol.st_value;
+              return symbol_it;
             }
             index = this->hash_chains.at(index);
           }
         }
 
-        std::uint64_t lookup_gnu_symbol(const char *name)
+        std::vector<::elf::elf_symbol>::const_iterator lookup_gnu_symbol(const char *name) const
         {
           if (this->gnu_hash_buckets.empty())
           {
-            return 0;
+            return this->dynamic_symbols.cend();
           }
           std::uint32_t hash1 = gnu_hash(name);
           std::uint32_t hash2 = hash1 >> this->gnu_hash_bloom_shift;
@@ -1524,18 +1525,18 @@ namespace elf
 
           if ((this->gnu_hash_bloom_words.at((hash1 / bloom_word_size) & bloom_size_bitmask) & bitmask) != bitmask)
           {
-            return 0;
+            return this->dynamic_symbols.cend();
           }
 
           std::size_t start_idx = this->gnu_hash_buckets.at(hash1 % this->gnu_hash_buckets.size());
           if (start_idx == ::elf::elf_symbol::STN_UNDEF)
           {
-            return 0;
+            return this->dynamic_symbols.cend();
           }
 
-          auto current_symbol = this->dynamic_symbols.begin();
+          auto current_symbol = this->dynamic_symbols.cbegin();
           std::advance(current_symbol, start_idx);
-          auto current_value = this->gnu_hash_values.begin();
+          auto current_value = this->gnu_hash_values.cbegin();
           std::advance(current_value, start_idx - this->gnu_hash_omitted_symbols_count);
 
           hash1 &= ~1;
@@ -1550,16 +1551,16 @@ namespace elf
 
             if (std::strcmp(current_symbol->st_name_str, name) == 0)
             {
-              return current_symbol->st_value;
+              return current_symbol;
             }
 
             if (hash2 & 1)
             {
-              return 0;
+              return this->dynamic_symbols.cend();
             }
           }
 
-          return 0;
+          return this->dynamic_symbols.cend();
         }
     };
 }

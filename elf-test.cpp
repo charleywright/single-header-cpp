@@ -86,6 +86,10 @@ int main(int argc, char *argv[])
     std::cout << "  Needed lib: " << needed_lib << "\n";
   }
   std::cout << "  Dynamic symbols count: " << lib.get_dynamic_symbols().size() << "\n";
-  std::cout << "  Undefined symbol: " << lib.get_symbol("thisisnotasymbol 1337") << "\n";
-  std::cout << "  FairPlaySAPSign: " << lib.get_symbol("Fc3vhtJDvr") << "\n";
+  if (lib.get_symbol("thisisnotasymbol 1337") != lib.get_dynamic_symbols().cend())
+  {
+    std::cerr << "Found symbol that should not exist" << std::endl;
+    return 1;
+  }
+  std::cout << "  FairPlaySAPSign: " << lib.get_symbol("Fc3vhtJDvr")->st_value << "\n";
 }
