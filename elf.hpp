@@ -48,6 +48,12 @@ namespace elf
 {
     typedef std::uint8_t byte;
 
+    /*
+     * All of our bitness-agnostic structures have the same initial layout as
+     * the 64-bit variants, allowing us to skip a copy when loading a 64-bit
+     * file. This means any new fields must be added at the end of the struct.
+     */
+
     typedef struct elf_ident
     {
         static constexpr byte EI_MAG0 = 0;
@@ -638,7 +644,9 @@ namespace elf
         static constexpr std::uint64_t DF_P1_GROUPPERM = 0x00000002;  /* Symbols from next object are not generally available.  */
     } elf_dynamic;
 
-    // Non-architecture agnostic types
+    /*
+     * Standard ELF structures
+     */
     namespace types
     {
         typedef std::uint32_t Elf32_Addr;
@@ -784,6 +792,9 @@ namespace elf
         } Elf64_Dyn;
     }
 
+    /*
+     * Compute the ELF hash value for a symbol name
+     */
     inline std::uint_fast32_t elf_hash(const char *name)
     {
       std::uint_fast32_t h = 0, g;
@@ -798,8 +809,13 @@ namespace elf
       return h;
     }
 
-    // https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
-    // https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
+    /*
+     * Compute the GNU hash value for a symbol name
+     *
+     * References:
+     *  https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
+     *  https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
+     */
     inline uint_fast32_t gnu_hash(const char *s)
     {
       uint_fast32_t h = 5381;
@@ -810,6 +826,9 @@ namespace elf
       return h & 0xffffffff;
     }
 
+    /*
+     * Read and parse an ELF file into a set of structures
+     */
     class elf_file
     {
     public:
@@ -829,75 +848,118 @@ namespace elf
           }
         };
 
+        /*
+         * Check if an error occurred
+         */
         bool error() const
         {
           return !this->last_error.empty();
         }
 
+        /*
+         * Get a message for the last error that occurred
+         */
         const std::string &error_message() const
         {
           return this->last_error;
         }
 
+        /*
+         * Clear the current error
+         */
         void clear_error()
         {
           this->last_error = "";
         }
 
+        /*
+         * Get a bitness-agnostic Elf*_Ehdr structure
+         */
         const ::elf::elf_header &get_header() const
         {
           return this->header;
         }
 
+        /*
+         * Get a vector of bitness-agnostic Elf*_Phdr structures
+         */
         const std::vector<::elf::elf_program_header> &get_program_headers() const
         {
           return this->program_headers;
         }
 
+        /*
+         * Get a vector of bitness-agnostic Elf*_Shdr structures
+         */
         const std::vector<::elf::elf_section_header> &get_section_headers() const
         {
           return this->section_headers;
         }
 
+        /*
+         * Check if the ELF file is little endian. Shorthand for
+         * get_header().e_ident.ei_data == ::elf::elf_ident::ELFDATA2LSB
+         */
         bool is_little_endian() const
         {
           return this->header.e_ident.ei_data == ::elf::elf_ident::ELFDATA2LSB;
         }
 
+        /*
+         * Check if the ELF file is big endian. Shorthand for
+         * get_header().e_ident.ei_data == ::elf::elf_ident::ELFDATA2MSB
+         */
         bool is_big_endian() const
         {
           return this->header.e_ident.ei_data == ::elf::elf_ident::ELFDATA2MSB;
         }
 
+        /*
+         * Check if the ELF file is 32-bit. Shorthand for
+         * get_header().e_ident.ei_class == ::elf::elf_ident::ELFCLASS32
+         */
         bool is_32_bit() const
         {
           return this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS32;
         }
 
+        /*
+         * Check if the ELF file is 64-bit. Shorthand for
+         * get_header().e_ident.ei_class == ::elf::elf_ident::ELFCLASS64
+         */
         bool is_64_bit() const
         {
           return this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64;
         }
 
+        /*
+         * Get the underlying std::ifstream to read the binary file
+         */
         std::ifstream &get_binary_file()
         {
           return this->binary_file;
         }
 
+        /*
+         * Parse the dynamic segment of the ELF file including symbols
+         */
         bool parse_dynamic_segment()
         {
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+
+          /*
+           * Read the dynamic segment entries
+           */
           const auto dynamic_header = std::find_if(this->program_headers.begin(), this->program_headers.end(),
                                                    [](const elf::elf_program_header &program_header) {
                                                        return program_header.p_type == ::elf::elf_program_header::PT_DYNAMIC;
                                                    });
           if (dynamic_header == this->program_headers.end())
           {
-            return false;
-          }
-
-          if (!this->binary_file.is_open())
-          {
-            this->last_error = "Binary file is not open";
             return false;
           }
           this->binary_file.clear();
@@ -945,6 +1007,9 @@ namespace elf
             return false;
           }
 
+          /*
+           * Extract the info we need. Apply the dynamic string table offset later
+           */
           std::uintptr_t dynamic_string_table_offset = 0;
           std::uint64_t dynamic_string_table_length = 0;
           std::uintptr_t symbol_table_offset = 0;
@@ -996,6 +1061,9 @@ namespace elf
             return false;
           }
 
+          /*
+           * Read the dynamic string table
+           */
           this->dynamic_segment_string_table.resize(dynamic_string_table_length);
           this->binary_file.seekg(static_cast<std::streamoff>(dynamic_string_table_offset));
           this->binary_file.read(this->dynamic_segment_string_table.data(), static_cast<std::streamsize>(dynamic_string_table_length));
@@ -1006,12 +1074,18 @@ namespace elf
           }
           const auto dynamic_string_table_base = reinterpret_cast<std::uintptr_t>(this->dynamic_segment_string_table.data());
 
+          /*
+           * Apply the dynamic string table offset to the strings we need
+           */
           this->so_name = dynamic_string_table_base + this->so_name;
           for (auto &needed: this->needed_libraries)
           {
             needed = dynamic_string_table_base + needed;
           }
 
+          /*
+           * Validate the symbol table header
+           */
           const auto symbol_table_header = std::find_if(this->section_headers.begin(), this->section_headers.end(),
                                                         [](const elf::elf_section_header &section_header) {
                                                             return section_header.sh_type == ::elf::elf_section_header::SHT_DYNSYM;
@@ -1026,8 +1100,11 @@ namespace elf
             this->last_error = "Symbol table offsets don't match";
             return false;
           }
-          std::uint64_t symbol_table_entry_count = symbol_table_header->sh_size / symbol_table_entry_size;
 
+          /*
+           * Read the symbol table
+           */
+          std::uint64_t symbol_table_entry_count = symbol_table_header->sh_size / symbol_table_entry_size;
           if (this->is_64_bit())
           {
             if (symbol_table_entry_size != sizeof(::elf::types::Elf64_Sym))
@@ -1076,36 +1153,57 @@ namespace elf
             }
           }
 
+          /*
+           * Parse whichever hash tables are present
+           */
           this->parse_hash_tables();
 
           return true;
         }
 
+        /*
+         * Get a vector of bitness-agnostic Elf*_Dyn structures
+         */
         const std::vector<::elf::elf_dynamic> &get_dynamic_entries() const
         {
           return this->dynamic_entries;
         }
 
+        /*
+         * Get the dynamic string table which contains symbol names amongst other things
+         */
         const std::vector<char> &get_dynamic_string_table() const
         {
           return this->dynamic_segment_string_table;
         }
 
+        /*
+         * Get the value of DT_SONAME
+         */
         const char *get_so_name() const
         {
           return this->so_name;
         }
 
+        /*
+         * Get a vector of DT_NEEDED values
+         */
         const std::vector<const char *> &get_needed_libraries() const
         {
           return this->needed_libraries;
         }
 
+        /*
+         * Get a vector of bitness-agnostic Elf*_Sym structures for all dynamic symbols
+         */
         const std::vector<elf::elf_symbol> &get_dynamic_symbols() const
         {
           return this->dynamic_symbols;
         }
 
+        /*
+         * Get a symbol by its name using the GNU hash table and/or the ELF hash table
+         */
         std::vector<::elf::elf_symbol>::const_iterator get_symbol(const char *name) const
         {
           auto symbol = this->lookup_gnu_symbol(name);
