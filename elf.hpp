@@ -38,6 +38,8 @@
  * https://blogs.oracle.com/solaris/post/gnu-hash-elf-sections
  * https://sourceware.org/legacy-ml/binutils/2006-10/msg00377.html
  * https://akkadia.org/drepper/dsohowto.pdf
+ * https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-54839.html
+ * https://raw.githubusercontent.com/wiki/hjl-tools/x86-psABI/intel386-psABI-1.1.pdf
  *
  * TODO:
  * - Properly handle endianness
@@ -644,6 +646,108 @@ namespace elf
         static constexpr std::uint64_t DF_P1_GROUPPERM = 0x00000002;  /* Symbols from next object are not generally available.  */
     } elf_dynamic;
 
+    typedef struct elf_rel
+    {
+        std::uint64_t r_offset;  /* Address */
+        /*
+         * There is a huge amount of relocation types spanning architectures,
+         * these are the values for i386 and x86_64.
+         */
+        // https://raw.githubusercontent.com/wiki/hjl-tools/x86-psABI/intel386-psABI-1.1.pdf
+        static constexpr std::uint32_t R_386_NONE = 0;
+        static constexpr std::uint32_t R_386_32 = 1;
+        static constexpr std::uint32_t R_386_PC32 = 2;
+        static constexpr std::uint32_t R_386_GOT32 = 3;
+        static constexpr std::uint32_t R_386_PLT32 = 4;
+        static constexpr std::uint32_t R_386_COPY = 5;
+        static constexpr std::uint32_t R_386_GLOB_DAT = 6;
+        static constexpr std::uint32_t R_386_JUMP_SLOT = 7;
+        static constexpr std::uint32_t R_386_RELATIVE = 8;
+        static constexpr std::uint32_t R_386_GOTOFF = 9;
+        static constexpr std::uint32_t R_386_GOTPC = 10;
+        static constexpr std::uint32_t R_386_TLS_TPOFF = 14;
+        static constexpr std::uint32_t R_386_TLS_IE = 15;
+        static constexpr std::uint32_t R_386_TLS_GOTIE = 16;
+        static constexpr std::uint32_t R_386_TLS_LE = 17;
+        static constexpr std::uint32_t R_386_TLS_GD = 18;
+        static constexpr std::uint32_t R_386_TLS_LDM = 19;
+        static constexpr std::uint32_t R_386_16 = 20;
+        static constexpr std::uint32_t R_386_PC16 = 21;
+        static constexpr std::uint32_t R_386_8 = 22;
+        static constexpr std::uint32_t R_386_PC8 = 23;
+        static constexpr std::uint32_t R_386_TLS_GD_32 = 24;
+        static constexpr std::uint32_t R_386_TLS_GD_PUSH = 25;
+        static constexpr std::uint32_t R_386_TLS_GD_CALL = 26;
+        static constexpr std::uint32_t R_386_TLS_GD_POP = 27;
+        static constexpr std::uint32_t R_386_TLS_LDM_32 = 28;
+        static constexpr std::uint32_t R_386_TLS_LDM_PUSH = 29;
+        static constexpr std::uint32_t R_386_TLS_LDM_CALL = 30;
+        static constexpr std::uint32_t R_386_TLS_LDM_POP = 31;
+        static constexpr std::uint32_t R_386_TLS_LDO_32 = 32;
+        static constexpr std::uint32_t R_386_TLS_IE_32 = 33;
+        static constexpr std::uint32_t R_386_TLS_LE_32 = 34;
+        static constexpr std::uint32_t R_386_TLS_DTPMOD32 = 35;
+        static constexpr std::uint32_t R_386_TLS_DTPOFF32 = 36;
+        static constexpr std::uint32_t R_386_TLS_TPOFF32 = 37;
+        static constexpr std::uint32_t R_386_SIZE32 = 38;
+        static constexpr std::uint32_t R_386_TLS_GOTDESC = 39;
+        static constexpr std::uint32_t R_386_TLS_DESC_CALL = 40;
+        static constexpr std::uint32_t R_386_TLS_DESC = 41;
+        static constexpr std::uint32_t R_386_IRELATIVE = 42;
+        static constexpr std::uint32_t R_386_GOT32X = 43;
+        // https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf
+        static constexpr std::uint32_t R_X86_64_NONE = 0;
+        static constexpr std::uint32_t R_X86_64_64 = 1;
+        static constexpr std::uint32_t R_X86_64_PC32 = 2;
+        static constexpr std::uint32_t R_X86_64_GOT32 = 3;
+        static constexpr std::uint32_t R_X86_64_PLT32 = 4;
+        static constexpr std::uint32_t R_X86_64_COPY = 5;
+        static constexpr std::uint32_t R_X86_64_GLOB_DAT = 6;
+        static constexpr std::uint32_t R_X86_64_JUMP_SLOT = 7;
+        static constexpr std::uint32_t R_X86_64_RELATIVE = 8;
+        static constexpr std::uint32_t R_X86_64_GOTPCREL = 9;
+        static constexpr std::uint32_t R_X86_64_32 = 10;
+        static constexpr std::uint32_t R_X86_64_32S = 11;
+        static constexpr std::uint32_t R_X86_64_16 = 12;
+        static constexpr std::uint32_t R_X86_64_PC16 = 13;
+        static constexpr std::uint32_t R_X86_64_8 = 14;
+        static constexpr std::uint32_t R_X86_64_PC8 = 15;
+        static constexpr std::uint32_t R_X86_64_DTPMOD64 = 16;
+        static constexpr std::uint32_t R_X86_64_DTPOFF64 = 17;
+        static constexpr std::uint32_t R_X86_64_TPOFF64 = 18;
+        static constexpr std::uint32_t R_X86_64_TLSGD = 19;
+        static constexpr std::uint32_t R_X86_64_TLSLD = 20;
+        static constexpr std::uint32_t R_X86_64_DTPOFF32 = 21;
+        static constexpr std::uint32_t R_X86_64_GOTTPOFF = 22;
+        static constexpr std::uint32_t R_X86_64_TPOFF32 = 23;
+        static constexpr std::uint32_t R_X86_64_PC64 = 24;
+        static constexpr std::uint32_t R_X86_64_GOTOFF64 = 25;
+        static constexpr std::uint32_t R_X86_64_GOTPC32 = 26;
+        static constexpr std::uint32_t R_X86_64_GOT64 = 27;
+        static constexpr std::uint32_t R_X86_64_GOTPCREL64 = 28;
+        static constexpr std::uint32_t R_X86_64_GOTPC64 = 29;
+        static constexpr std::uint32_t R_X86_64_GOTPLT64 = 30;
+        static constexpr std::uint32_t R_X86_64_PLTOFF64 = 31;
+        static constexpr std::uint32_t R_X86_64_SIZE32 = 32;
+        static constexpr std::uint32_t R_X86_64_SIZE64 = 33;
+        static constexpr std::uint32_t R_X86_64_GOTPC32_TLSDESC = 34;
+        static constexpr std::uint32_t R_X86_64_TLSDESC_CALL = 35;
+        static constexpr std::uint32_t R_X86_64_TLSDESC = 36;
+        static constexpr std::uint32_t R_X86_64_IRELATIVE = 37;
+
+        std::uint32_t r_type;    /* Relocation type */
+        std::uint32_t r_sym;     /* Symbol index */
+    } __attribute__((packed)) elf_rel;
+
+    typedef struct elf_rela
+    {
+        std::uint64_t r_offset;  /* Address */
+        // elf_rel contains all the types
+        std::uint32_t r_type;    /* Relocation type */
+        std::uint32_t r_sym;     /* Symbol index */
+        std::int64_t r_addend;   /* Addend */
+    } __attribute__((packed)) elf_rela;
+
     /*
      * Standard ELF structures
      */
@@ -751,7 +855,7 @@ namespace elf
             Elf64_Xword sh_entsize;
         } Elf64_Shdr;
 
-        typedef struct
+        typedef struct Elf32_Sym
         {
             Elf32_Word st_name;
             Elf32_Addr st_value;
@@ -761,7 +865,7 @@ namespace elf
             Elf32_Half st_shndx;
         } Elf32_Sym;
 
-        typedef struct
+        typedef struct Elf64_Sym
         {
             Elf64_Word st_name;
             unsigned char st_info;
@@ -771,7 +875,7 @@ namespace elf
             Elf64_Xword st_size;
         } Elf64_Sym;
 
-        typedef struct
+        typedef struct Elf32_Dyn
         {
             Elf32_Sword d_tag;
             union
@@ -781,7 +885,7 @@ namespace elf
             } d_un;
         } Elf32_Dyn;
 
-        typedef struct
+        typedef struct Elf64_Dyn
         {
             Elf64_Sxword d_tag;
             union
@@ -790,6 +894,32 @@ namespace elf
                 Elf64_Addr d_ptr;
             } d_un;
         } Elf64_Dyn;
+
+        typedef struct Elf32_Rel
+        {
+            Elf32_Addr r_offset;
+            Elf32_Word r_info;
+        } Elf32_Rel;
+
+        typedef struct Elf64_Rel
+        {
+            Elf64_Addr r_offset;
+            Elf64_Xword r_info;
+        } Elf64_Rel;
+
+        typedef struct Elf32_Rela
+        {
+            Elf32_Addr r_offset;
+            Elf32_Word r_info;
+            Elf32_Sword r_addend;
+        } Elf32_Rela;
+
+        typedef struct Elf64_Rela
+        {
+            Elf64_Addr r_offset;
+            Elf64_Xword r_info;
+            Elf64_Sxword r_addend;
+        } Elf64_Rela;
     }
 
     /*
@@ -1156,7 +1286,18 @@ namespace elf
           /*
            * Parse whichever hash tables are present
            */
-          this->parse_hash_tables();
+          if (!this->parse_hash_tables())
+          {
+            return false;
+          }
+
+          /*
+           * Parse rel and rela sections, whichever are present
+           */
+          if (!this->parse_relocations())
+          {
+            return false;
+          }
 
           return true;
         }
@@ -1214,6 +1355,38 @@ namespace elf
           return symbol;
         }
 
+        /*
+         * Get dynamic symbol relocations without addend (non PLT)
+         */
+        const std::vector<::elf::elf_rel> &get_relocations() const
+        {
+          return this->dyn_rel_entries;
+        }
+
+        /*
+         * Get dynamic symbol relocations with addend (non PLT)
+         */
+        const std::vector<::elf::elf_rela> &get_relocations_with_addend() const
+        {
+          return this->dyn_rela_entries;
+        }
+
+        /*
+         * Get PLT relocations without addend
+         */
+        const std::vector<::elf::elf_rel> &get_plt_relocations() const
+        {
+          return this->plt_rel_entries;
+        }
+
+        /*
+         * Get PLT relocations with addend
+         */
+        const std::vector<::elf::elf_rela> &get_plt_relocations_with_addend() const
+        {
+          return this->plt_rela_entries;
+        }
+
     private:
         const std::filesystem::path path;
         std::ifstream binary_file;
@@ -1236,6 +1409,11 @@ namespace elf
         std::uint32_t gnu_hash_bloom_shift = 0;
         std::uint32_t gnu_hash_omitted_symbols_count = 0;
         std::vector<std::uint64_t> gnu_hash_bloom_words;
+
+        std::vector<::elf::elf_rel> plt_rel_entries;
+        std::vector<::elf::elf_rel> dyn_rel_entries;
+        std::vector<::elf::elf_rela> plt_rela_entries;
+        std::vector<::elf::elf_rela> dyn_rela_entries;
 
     private:
         bool open_file()
@@ -1576,6 +1754,174 @@ namespace elf
                   return false;
                 }
 
+                break;
+              }
+            }
+          }
+
+          return true;
+        }
+
+        bool parse_relocations()
+        {
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+
+          for (const auto &section_header: this->get_section_headers())
+          {
+            switch (section_header.sh_type)
+            {
+              case ::elf::elf_section_header::SHT_REL:
+              {
+                this->binary_file.seekg(static_cast<std::streamoff>(section_header.sh_offset));
+                if (this->is_64_bit())
+                {
+                  if (section_header.sh_entsize != sizeof(::elf::types::Elf64_Rel))
+                  {
+                    this->last_error = "Invalid relocation entry size";
+                    return false;
+                  }
+                  std::size_t relocation_entries_count = section_header.sh_size / section_header.sh_entsize;
+
+                  if (std::strcmp(section_header.sh_name_str, ".rel.plt") == 0)
+                  {
+                    this->plt_rel_entries.resize(relocation_entries_count);
+                    this->binary_file.read(reinterpret_cast<char *>(this->plt_rel_entries.data()), static_cast<std::streamsize>(section_header.sh_size));
+                  } else if (std::strcmp(section_header.sh_name_str, ".rel.dyn") == 0)
+                  {
+                    this->dyn_rel_entries.resize(relocation_entries_count);
+                    this->binary_file.read(reinterpret_cast<char *>(this->dyn_rel_entries.data()), static_cast<std::streamsize>(section_header.sh_size));
+                  } else
+                  {
+                    this->last_error = "Invalid relocation section name";
+                    return false;
+                  }
+
+                  if (this->binary_file.gcount() != section_header.sh_size)
+                  {
+                    this->last_error = "Failed to read relocation entries";
+                    return false;
+                  }
+                } else
+                {
+                  if (section_header.sh_entsize != sizeof(::elf::types::Elf32_Rel))
+                  {
+                    this->last_error = "Invalid relocation entry size";
+                    return false;
+                  }
+                  std::size_t relocation_entries_count = section_header.sh_size / section_header.sh_entsize;
+                  std::vector<::elf::types::Elf32_Rel> real_relocation_entries(relocation_entries_count);
+                  this->binary_file.read(reinterpret_cast<char *>(real_relocation_entries.data()), static_cast<std::streamsize>(section_header.sh_size));
+                  if (this->binary_file.gcount() != section_header.sh_size)
+                  {
+                    this->last_error = "Failed to read relocation entries";
+                    return false;
+                  }
+
+                  if (std::strcmp(section_header.sh_name_str, ".rel.plt") == 0)
+                  {
+                    this->plt_rel_entries.resize(relocation_entries_count);
+                    for (std::size_t i = 0; i < relocation_entries_count; i++)
+                    {
+                      this->plt_rel_entries[i].r_offset = real_relocation_entries[i].r_offset;
+                      this->plt_rel_entries[i].r_type = real_relocation_entries[i].r_info & 0xff;
+                      this->plt_rel_entries[i].r_sym = real_relocation_entries[i].r_info >> 8;
+                    }
+                  } else if (std::strcmp(section_header.sh_name_str, ".rel.dyn") == 0)
+                  {
+                    this->dyn_rel_entries.resize(relocation_entries_count);
+                    for (std::size_t i = 0; i < relocation_entries_count; i++)
+                    {
+                      this->dyn_rel_entries[i].r_offset = real_relocation_entries[i].r_offset;
+                      this->dyn_rel_entries[i].r_type = real_relocation_entries[i].r_info & 0xff;
+                      this->dyn_rel_entries[i].r_sym = real_relocation_entries[i].r_info >> 8;
+                    }
+                  } else
+                  {
+                    this->last_error = "Invalid relocation section name";
+                    return false;
+                  }
+                }
+                break;
+              }
+              case ::elf::elf_section_header::SHT_RELA:
+              {
+                this->binary_file.seekg(static_cast<std::streamoff>(section_header.sh_offset));
+                if (this->is_64_bit())
+                {
+                  if (section_header.sh_entsize != sizeof(::elf::types::Elf64_Rela))
+                  {
+                    this->last_error = "Invalid relocation entry size";
+                    return false;
+                  }
+                  std::size_t relocation_entries_count = section_header.sh_size / section_header.sh_entsize;
+
+                  if (std::strcmp(section_header.sh_name_str, ".rela.plt") == 0)
+                  {
+                    this->plt_rela_entries.resize(relocation_entries_count);
+                    this->binary_file.read(reinterpret_cast<char *>(this->plt_rela_entries.data()),
+                                           static_cast<std::streamsize>(section_header.sh_size));
+                  } else if (std::strcmp(section_header.sh_name_str, ".rela.dyn") == 0)
+                  {
+                    this->dyn_rela_entries.resize(relocation_entries_count);
+                    this->binary_file.read(reinterpret_cast<char *>(this->dyn_rela_entries.data()),
+                                           static_cast<std::streamsize>(section_header.sh_size));
+                  } else
+                  {
+                    this->last_error = "Invalid relocation section name";
+                    return false;
+                  }
+
+                  if (this->binary_file.gcount() != section_header.sh_size)
+                  {
+                    this->last_error = "Failed to read relocation entries";
+                    return false;
+                  }
+                } else
+                {
+                  if (section_header.sh_entsize != sizeof(::elf::types::Elf32_Rela))
+                  {
+                    this->last_error = "Invalid relocation entry size";
+                    return false;
+                  }
+                  std::size_t relocation_entries_count = section_header.sh_size / section_header.sh_entsize;
+                  std::vector<::elf::types::Elf32_Rela> real_relocation_entries(relocation_entries_count);
+                  this->binary_file.read(reinterpret_cast<char *>(real_relocation_entries.data()), static_cast<std::streamsize>(section_header.sh_size));
+                  if (this->binary_file.gcount() != section_header.sh_size)
+                  {
+                    this->last_error = "Failed to read relocation entries";
+                    return false;
+                  }
+
+                  if (std::strcmp(section_header.sh_name_str, ".rela.plt") == 0)
+                  {
+                    this->plt_rela_entries.resize(relocation_entries_count);
+                    for (std::size_t i = 0; i < relocation_entries_count; i++)
+                    {
+                      this->plt_rela_entries[i].r_offset = real_relocation_entries[i].r_offset;
+                      this->plt_rela_entries[i].r_type = real_relocation_entries[i].r_info & 0xff;
+                      this->plt_rela_entries[i].r_sym = real_relocation_entries[i].r_info >> 8;
+                      this->plt_rela_entries[i].r_addend = real_relocation_entries[i].r_addend;
+                    }
+                  } else if (std::strcmp(section_header.sh_name_str, ".rela.dyn") == 0)
+                  {
+                    this->dyn_rela_entries.resize(relocation_entries_count);
+                    for (std::size_t i = 0; i < relocation_entries_count; i++)
+                    {
+                      this->dyn_rela_entries[i].r_offset = real_relocation_entries[i].r_offset;
+                      this->dyn_rela_entries[i].r_type = real_relocation_entries[i].r_info & 0xff;
+                      this->dyn_rela_entries[i].r_sym = real_relocation_entries[i].r_info >> 8;
+                      this->dyn_rela_entries[i].r_addend = real_relocation_entries[i].r_addend;
+                    }
+                  } else
+                  {
+                    this->last_error = "Invalid relocation section name";
+                    return false;
+                  }
+                }
                 break;
               }
             }

@@ -86,6 +86,11 @@ int main(int argc, char *argv[])
     std::cout << "  Needed lib: " << needed_lib << "\n";
   }
   std::cout << "  Dynamic symbols count: " << lib.get_dynamic_symbols().size() << "\n";
+  std::cout \
+  << "  Relocations without addend: " << lib.get_relocations().size() << "\n" \
+  << "  Relocations with addend: " << lib.get_relocations_with_addend().size() << "\n" \
+  << "  PLT relocations without addend: " << lib.get_plt_relocations().size() << "\n" \
+  << "  PLT relocations with addend: " << lib.get_plt_relocations_with_addend().size() << "\n";
   if (lib.get_symbol("thisisnotasymbol 1337") != lib.get_dynamic_symbols().cend())
   {
     std::cerr << "Found symbol that should not exist" << std::endl;
