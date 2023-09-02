@@ -58,50 +58,50 @@ namespace elf
 
     typedef struct elf_ident
     {
-        static constexpr byte EI_MAG0 = 0;
-        static constexpr byte ELFMAG0 = 0x7f;
-        static constexpr byte EI_MAG1 = 1;
-        static constexpr byte ELFMAG1 = 'E';
-        static constexpr byte EI_MAG2 = 2;
-        static constexpr byte ELFMAG2 = 'L';
-        static constexpr byte EI_MAG3 = 3;
-        static constexpr byte ELFMAG3 = 'F';
+        inline static constexpr byte EI_MAG0 = 0;
+        inline static constexpr byte ELFMAG0 = 0x7f;
+        inline static constexpr byte EI_MAG1 = 1;
+        inline static constexpr byte ELFMAG1 = 'E';
+        inline static constexpr byte EI_MAG2 = 2;
+        inline static constexpr byte ELFMAG2 = 'L';
+        inline static constexpr byte EI_MAG3 = 3;
+        inline static constexpr byte ELFMAG3 = 'F';
         ::elf::byte ei_magic[4];  /* File identification */
 
-        static constexpr byte ELFCLASSNONE = 0;  /* Invalid class */
-        static constexpr byte ELFCLASS32 = 1;    /* 32-bit objects */
-        static constexpr byte ELFCLASS64 = 2;    /* 64-bit objects */
+        inline static constexpr byte ELFCLASSNONE = 0;  /* Invalid class */
+        inline static constexpr byte ELFCLASS32 = 1;    /* 32-bit objects */
+        inline static constexpr byte ELFCLASS64 = 2;    /* 64-bit objects */
         ::elf::byte ei_class;  /* File class */
 
-        static constexpr byte ELFDATANONE = 0;   /* Invalid data encoding */
-        static constexpr byte ELFDATA2LSB = 1;   /* 2's complement, little endian */
-        static constexpr byte ELFDATA2MSB = 2;   /* 2's complement, big endian */
+        inline static constexpr byte ELFDATANONE = 0;   /* Invalid data encoding */
+        inline static constexpr byte ELFDATA2LSB = 1;   /* 2's complement, little endian */
+        inline static constexpr byte ELFDATA2MSB = 2;   /* 2's complement, big endian */
         ::elf::byte ei_data;  /* Data encoding */
 
-        static constexpr byte EV_NONE = 0;       /* Invalid version */
-        static constexpr byte EV_CURRENT = 1;    /* Current version */
+        inline static constexpr byte EV_NONE = 0;       /* Invalid version */
+        inline static constexpr byte EV_CURRENT = 1;    /* Current version */
         ::elf::byte ei_version;  /* File version */
 
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L135-L150
-        static constexpr byte ELFOSABI_NONE = 0;              /* UNIX System V ABI */
-        static constexpr byte ELFOSABI_SYSV = 0;              /* Alias.  */
-        static constexpr byte ELFOSABI_HPUX = 1;              /* HP-UX */
-        static constexpr byte ELFOSABI_NETBSD = 2;            /* NetBSD.  */
-        static constexpr byte ELFOSABI_GNU = 3;               /* Object uses GNU ELF extensions.  */
-        static constexpr byte ELFOSABI_LINUX = ELFOSABI_GNU;  /* Compatibility alias.  */
-        static constexpr byte ELFOSABI_SOLARIS = 6;           /* Sun Solaris.  */
-        static constexpr byte ELFOSABI_AIX = 7;               /* IBM AIX.  */
-        static constexpr byte ELFOSABI_IRIX = 8;              /* SGI Irix.  */
-        static constexpr byte ELFOSABI_FREEBSD = 9;           /* FreeBSD.  */
-        static constexpr byte ELFOSABI_TRU64 = 10;            /* Compaq TRU64 UNIX.  */
-        static constexpr byte ELFOSABI_MODESTO = 11;          /* Novell Modesto.  */
-        static constexpr byte ELFOSABI_OPENBSD = 12;          /* OpenBSD.  */
-        static constexpr byte ELFOSABI_ARM_AEABI = 64;        /* ARM EABI */
-        static constexpr byte ELFOSABI_ARM = 97;              /* ARM */
-        static constexpr byte ELFOSABI_STANDALONE = 255;      /* Standalone (embedded) application */
+        inline static constexpr byte ELFOSABI_NONE = 0;              /* UNIX System V ABI */
+        inline static constexpr byte ELFOSABI_SYSV = 0;              /* Alias.  */
+        inline static constexpr byte ELFOSABI_HPUX = 1;              /* HP-UX */
+        inline static constexpr byte ELFOSABI_NETBSD = 2;            /* NetBSD.  */
+        inline static constexpr byte ELFOSABI_GNU = 3;               /* Object uses GNU ELF extensions.  */
+        inline static constexpr byte ELFOSABI_LINUX = ELFOSABI_GNU;  /* Compatibility alias.  */
+        inline static constexpr byte ELFOSABI_SOLARIS = 6;           /* Sun Solaris.  */
+        inline static constexpr byte ELFOSABI_AIX = 7;               /* IBM AIX.  */
+        inline static constexpr byte ELFOSABI_IRIX = 8;              /* SGI Irix.  */
+        inline static constexpr byte ELFOSABI_FREEBSD = 9;           /* FreeBSD.  */
+        inline static constexpr byte ELFOSABI_TRU64 = 10;            /* Compaq TRU64 UNIX.  */
+        inline static constexpr byte ELFOSABI_MODESTO = 11;          /* Novell Modesto.  */
+        inline static constexpr byte ELFOSABI_OPENBSD = 12;          /* OpenBSD.  */
+        inline static constexpr byte ELFOSABI_ARM_AEABI = 64;        /* ARM EABI */
+        inline static constexpr byte ELFOSABI_ARM = 97;              /* ARM */
+        inline static constexpr byte ELFOSABI_STANDALONE = 255;      /* Standalone (embedded) application */
         ::elf::byte ei_osabi;  /* OS-specific ELF extensions */
 
-        static constexpr byte ELFAABIVERSION_UNSPECIFIED = 0; /* Unspecified */
+        inline static constexpr byte ELFAABIVERSION_UNSPECIFIED = 0; /* Unspecified */
         // Other values are OSABI-specific.
         ::elf::byte ei_abiversion;  /* ABI version */
 
@@ -113,215 +113,215 @@ namespace elf
     {
         ::elf::elf_ident e_ident;  /* Machine-independent identification */
 
-        static constexpr std::uint16_t ET_NONE = 0;         /* No file type */
-        static constexpr std::uint16_t ET_REL = 1;          /* Relocatable file */
-        static constexpr std::uint16_t ET_EXEC = 2;         /* Executable file */
-        static constexpr std::uint16_t ET_DYN = 3;          /* Shared object file */
-        static constexpr std::uint16_t ET_CORE = 4;         /* Core file */
-        static constexpr std::uint16_t ET_LOOS = 0xfe00;    /* Operating system-specific */
-        static constexpr std::uint16_t ET_HIOS = 0xfeff;    /* Operating system-specific */
-        static constexpr std::uint16_t ET_LOPROC = 0xff00;  /* Processor-specific */
-        static constexpr std::uint16_t ET_HIPROC = 0xffff;  /* Processor-specific */
+        inline static constexpr std::uint16_t ET_NONE = 0;         /* No file type */
+        inline static constexpr std::uint16_t ET_REL = 1;          /* Relocatable file */
+        inline static constexpr std::uint16_t ET_EXEC = 2;         /* Executable file */
+        inline static constexpr std::uint16_t ET_DYN = 3;          /* Shared object file */
+        inline static constexpr std::uint16_t ET_CORE = 4;         /* Core file */
+        inline static constexpr std::uint16_t ET_LOOS = 0xfe00;    /* Operating system-specific */
+        inline static constexpr std::uint16_t ET_HIOS = 0xfeff;    /* Operating system-specific */
+        inline static constexpr std::uint16_t ET_LOPROC = 0xff00;  /* Processor-specific */
+        inline static constexpr std::uint16_t ET_HIPROC = 0xffff;  /* Processor-specific */
         std::uint16_t e_type;  /* Object file type */
 
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L169-L373
-        static constexpr std::uint16_t EM_NONE = 0;             /* No machine */
-        static constexpr std::uint16_t EM_M32 = 1;              /* AT&T WE 32100 */
-        static constexpr std::uint16_t EM_SPARC = 2;            /* SUN SPARC */
-        static constexpr std::uint16_t EM_386 = 3;              /* Intel 80386 */
-        static constexpr std::uint16_t EM_68K = 4;              /* Motorola m68k family */
-        static constexpr std::uint16_t EM_88K = 5;              /* Motorola m88k family */
-        static constexpr std::uint16_t EM_IAMCU = 6;            /* Intel MCU */
-        static constexpr std::uint16_t EM_860 = 7;              /* Intel 80860 */
-        static constexpr std::uint16_t EM_MIPS = 8;             /* MIPS R3000 big-endian */
-        static constexpr std::uint16_t EM_S370 = 9;             /* IBM System/370 */
-        static constexpr std::uint16_t EM_MIPS_RS3_LE = 10;     /* MIPS R3000 little-endian */
+        inline static constexpr std::uint16_t EM_NONE = 0;             /* No machine */
+        inline static constexpr std::uint16_t EM_M32 = 1;              /* AT&T WE 32100 */
+        inline static constexpr std::uint16_t EM_SPARC = 2;            /* SUN SPARC */
+        inline static constexpr std::uint16_t EM_386 = 3;              /* Intel 80386 */
+        inline static constexpr std::uint16_t EM_68K = 4;              /* Motorola m68k family */
+        inline static constexpr std::uint16_t EM_88K = 5;              /* Motorola m88k family */
+        inline static constexpr std::uint16_t EM_IAMCU = 6;            /* Intel MCU */
+        inline static constexpr std::uint16_t EM_860 = 7;              /* Intel 80860 */
+        inline static constexpr std::uint16_t EM_MIPS = 8;             /* MIPS R3000 big-endian */
+        inline static constexpr std::uint16_t EM_S370 = 9;             /* IBM System/370 */
+        inline static constexpr std::uint16_t EM_MIPS_RS3_LE = 10;     /* MIPS R3000 little-endian */
         /* reserved 11-14 */
-        static constexpr std::uint16_t EM_PARISC = 15;          /* HPPA */
+        inline static constexpr std::uint16_t EM_PARISC = 15;          /* HPPA */
         /* reserved 16 */
-        static constexpr std::uint16_t EM_VPP500 = 17;          /* Fujitsu VPP500 */
-        static constexpr std::uint16_t EM_SPARC32PLUS = 18;     /* Sun's "v8plus" */
-        static constexpr std::uint16_t EM_960 = 19;             /* Intel 80960 */
-        static constexpr std::uint16_t EM_PPC = 20;             /* PowerPC */
-        static constexpr std::uint16_t EM_PPC64 = 21;           /* PowerPC 64-bit */
-        static constexpr std::uint16_t EM_S390 = 22;            /* IBM S390 */
-        static constexpr std::uint16_t EM_SPU = 23;             /* IBM SPU/SPC */
+        inline static constexpr std::uint16_t EM_VPP500 = 17;          /* Fujitsu VPP500 */
+        inline static constexpr std::uint16_t EM_SPARC32PLUS = 18;     /* Sun's "v8plus" */
+        inline static constexpr std::uint16_t EM_960 = 19;             /* Intel 80960 */
+        inline static constexpr std::uint16_t EM_PPC = 20;             /* PowerPC */
+        inline static constexpr std::uint16_t EM_PPC64 = 21;           /* PowerPC 64-bit */
+        inline static constexpr std::uint16_t EM_S390 = 22;            /* IBM S390 */
+        inline static constexpr std::uint16_t EM_SPU = 23;             /* IBM SPU/SPC */
         /* reserved 24-35 */
-        static constexpr std::uint16_t EM_V800 = 36;            /* NEC V800 series */
-        static constexpr std::uint16_t EM_FR20 = 37;            /* Fujitsu FR20 */
-        static constexpr std::uint16_t EM_RH32 = 38;            /* TRW RH-32 */
-        static constexpr std::uint16_t EM_RCE = 39;             /* Motorola RCE */
-        static constexpr std::uint16_t EM_ARM = 40;             /* ARM */
-        static constexpr std::uint16_t EM_FAKE_ALPHA = 41;      /* Digital Alpha */
-        static constexpr std::uint16_t EM_SH = 42;              /* Hitachi SH */
-        static constexpr std::uint16_t EM_SPARCV9 = 43;         /* SPARC v9 64-bit */
-        static constexpr std::uint16_t EM_TRICORE = 44;         /* Siemens Tricore */
-        static constexpr std::uint16_t EM_ARC = 45;             /* Argonaut RISC Core */
-        static constexpr std::uint16_t EM_H8_300 = 46;          /* Hitachi H8/300 */
-        static constexpr std::uint16_t EM_H8_300H = 47;         /* Hitachi H8/300H */
-        static constexpr std::uint16_t EM_H8S = 48;             /* Hitachi H8S */
-        static constexpr std::uint16_t EM_H8_500 = 49;          /* Hitachi H8/500 */
-        static constexpr std::uint16_t EM_IA_64 = 50;           /* Intel Merced */
-        static constexpr std::uint16_t EM_MIPS_X = 51;          /* Stanford MIPS-X */
-        static constexpr std::uint16_t EM_COLDFIRE = 52;        /* Motorola Coldfire */
-        static constexpr std::uint16_t EM_68HC12 = 53;          /* Motorola M68HC12 */
-        static constexpr std::uint16_t EM_MMA = 54;             /* Fujitsu MMA Multimedia Accelerator */
-        static constexpr std::uint16_t EM_PCP = 55;             /* Siemens PCP */
-        static constexpr std::uint16_t EM_NCPU = 56;            /* Sony nCPU embedded RISC */
-        static constexpr std::uint16_t EM_NDR1 = 57;            /* Denso NDR1 microprocessor */
-        static constexpr std::uint16_t EM_STARCORE = 58;        /* Motorola Start*Core processor */
-        static constexpr std::uint16_t EM_ME16 = 59;            /* Toyota ME16 processor */
-        static constexpr std::uint16_t EM_ST100 = 60;           /* STMicroelectronic ST100 processor */
-        static constexpr std::uint16_t EM_TINYJ = 61;           /* Advanced Logic Corp. Tinyj emb.fam */
-        static constexpr std::uint16_t EM_X86_64 = 62;          /* AMD x86-64 architecture */
-        static constexpr std::uint16_t EM_PDSP = 63;            /* Sony DSP Processor */
-        static constexpr std::uint16_t EM_PDP10 = 64;           /* Digital PDP-10 */
-        static constexpr std::uint16_t EM_PDP11 = 65;           /* Digital PDP-11 */
-        static constexpr std::uint16_t EM_FX66 = 66;            /* Siemens FX66 microcontroller */
-        static constexpr std::uint16_t EM_ST9PLUS = 67;         /* STMicroelectronics ST9+ 8/16 mc */
-        static constexpr std::uint16_t EM_ST7 = 68;             /* STmicroelectronics ST7 8 bit mc */
-        static constexpr std::uint16_t EM_68HC16 = 69;          /* Motorola MC68HC16 microcontroller */
-        static constexpr std::uint16_t EM_68HC11 = 70;          /* Motorola MC68HC11 microcontroller */
-        static constexpr std::uint16_t EM_68HC08 = 71;          /* Motorola MC68HC08 microcontroller */
-        static constexpr std::uint16_t EM_68HC05 = 72;          /* Motorola MC68HC05 microcontroller */
-        static constexpr std::uint16_t EM_SVX = 73;             /* Silicon Graphics SVx */
-        static constexpr std::uint16_t EM_ST19 = 74;            /* STMicroelectronics ST19 8 bit mc */
-        static constexpr std::uint16_t EM_VAX = 75;             /* Digital VAX */
-        static constexpr std::uint16_t EM_CRIS = 76;            /* Axis Communications 32-bit emb.proc */
-        static constexpr std::uint16_t EM_JAVELIN = 77;         /* Infineon Technologies 32-bit emb.proc */
-        static constexpr std::uint16_t EM_FIREPATH = 78;        /* Element 14 64-bit DSP Processor */
-        static constexpr std::uint16_t EM_ZSP = 79;             /* LSI Logic 16-bit DSP Processor */
-        static constexpr std::uint16_t EM_MMIX = 80;            /* Donald Knuth's educational 64-bit proc */
-        static constexpr std::uint16_t EM_HUANY = 81;           /* Harvard University machine-independent object files */
-        static constexpr std::uint16_t EM_PRISM = 82;           /* SiTera Prism */
-        static constexpr std::uint16_t EM_AVR = 83;             /* Atmel AVR 8-bit microcontroller */
-        static constexpr std::uint16_t EM_FR30 = 84;            /* Fujitsu FR30 */
-        static constexpr std::uint16_t EM_D10V = 85;            /* Mitsubishi D10V */
-        static constexpr std::uint16_t EM_D30V = 86;            /* Mitsubishi D30V */
-        static constexpr std::uint16_t EM_V850 = 87;            /* NEC v850 */
-        static constexpr std::uint16_t EM_M32R = 88;            /* Mitsubishi M32R */
-        static constexpr std::uint16_t EM_MN10300 = 89;         /* Matsushita MN10300 */
-        static constexpr std::uint16_t EM_MN10200 = 90;         /* Matsushita MN10200 */
-        static constexpr std::uint16_t EM_PJ = 91;              /* picoJava */
-        static constexpr std::uint16_t EM_OPENRISC = 92;        /* OpenRISC 32-bit embedded processor */
-        static constexpr std::uint16_t EM_ARC_COMPACT = 93;     /* ARC International ARCompact */
-        static constexpr std::uint16_t EM_XTENSA = 94;          /* Tensilica Xtensa Architecture */
-        static constexpr std::uint16_t EM_VIDEOCORE = 95;       /* Alphamosaic VideoCore */
-        static constexpr std::uint16_t EM_TMM_GPP = 96;         /* Thompson Multimedia General Purpose Proc */
-        static constexpr std::uint16_t EM_NS32K = 97;           /* National Semi. 32000 */
-        static constexpr std::uint16_t EM_TPC = 98;             /* Tenor Network TPC */
-        static constexpr std::uint16_t EM_SNP1K = 99;           /* Trebia SNP 1000 */
-        static constexpr std::uint16_t EM_ST200 = 100;          /* STMicroelectronics ST200 */
-        static constexpr std::uint16_t EM_IP2K = 101;           /* Ubicom IP2xxx */
-        static constexpr std::uint16_t EM_MAX = 102;            /* MAX processor */
-        static constexpr std::uint16_t EM_CR = 103;             /* National Semi. CompactRISC */
-        static constexpr std::uint16_t EM_F2MC16 = 104;         /* Fujitsu F2MC16 */
-        static constexpr std::uint16_t EM_MSP430 = 105;         /* Texas Instruments msp430 */
-        static constexpr std::uint16_t EM_BLACKFIN = 106;       /* Analog Devices Blackfin DSP */
-        static constexpr std::uint16_t EM_SE_C33 = 107;         /* Seiko Epson S1C33 family */
-        static constexpr std::uint16_t EM_SEP = 108;            /* Sharp embedded microprocessor */
-        static constexpr std::uint16_t EM_ARCA = 109;           /* Arca RISC */
-        static constexpr std::uint16_t EM_UNICORE = 110;        /* PKU-Unity & MPRC Peking Uni. mc series */
-        static constexpr std::uint16_t EM_EXCESS = 111;         /* eXcess configurable cpu */
-        static constexpr std::uint16_t EM_DXP = 112;            /* Icera Semi. Deep Execution Processor */
-        static constexpr std::uint16_t EM_ALTERA_NIOS2 = 113;   /* Altera Nios II */
-        static constexpr std::uint16_t EM_CRX = 114;            /* National Semi. CompactRISC CRX */
-        static constexpr std::uint16_t EM_XGATE = 115;          /* Motorola XGATE */
-        static constexpr std::uint16_t EM_C166 = 116;           /* Infineon C16x/XC16x */
-        static constexpr std::uint16_t EM_M16C = 117;           /* Renesas M16C */
-        static constexpr std::uint16_t EM_DSPIC30F = 118;       /* Microchip Technology dsPIC30F */
-        static constexpr std::uint16_t EM_CE = 119;             /* Freescale Communication Engine RISC */
-        static constexpr std::uint16_t EM_M32C = 120;           /* Renesas M32C */
+        inline static constexpr std::uint16_t EM_V800 = 36;            /* NEC V800 series */
+        inline static constexpr std::uint16_t EM_FR20 = 37;            /* Fujitsu FR20 */
+        inline static constexpr std::uint16_t EM_RH32 = 38;            /* TRW RH-32 */
+        inline static constexpr std::uint16_t EM_RCE = 39;             /* Motorola RCE */
+        inline static constexpr std::uint16_t EM_ARM = 40;             /* ARM */
+        inline static constexpr std::uint16_t EM_FAKE_ALPHA = 41;      /* Digital Alpha */
+        inline static constexpr std::uint16_t EM_SH = 42;              /* Hitachi SH */
+        inline static constexpr std::uint16_t EM_SPARCV9 = 43;         /* SPARC v9 64-bit */
+        inline static constexpr std::uint16_t EM_TRICORE = 44;         /* Siemens Tricore */
+        inline static constexpr std::uint16_t EM_ARC = 45;             /* Argonaut RISC Core */
+        inline static constexpr std::uint16_t EM_H8_300 = 46;          /* Hitachi H8/300 */
+        inline static constexpr std::uint16_t EM_H8_300H = 47;         /* Hitachi H8/300H */
+        inline static constexpr std::uint16_t EM_H8S = 48;             /* Hitachi H8S */
+        inline static constexpr std::uint16_t EM_H8_500 = 49;          /* Hitachi H8/500 */
+        inline static constexpr std::uint16_t EM_IA_64 = 50;           /* Intel Merced */
+        inline static constexpr std::uint16_t EM_MIPS_X = 51;          /* Stanford MIPS-X */
+        inline static constexpr std::uint16_t EM_COLDFIRE = 52;        /* Motorola Coldfire */
+        inline static constexpr std::uint16_t EM_68HC12 = 53;          /* Motorola M68HC12 */
+        inline static constexpr std::uint16_t EM_MMA = 54;             /* Fujitsu MMA Multimedia Accelerator */
+        inline static constexpr std::uint16_t EM_PCP = 55;             /* Siemens PCP */
+        inline static constexpr std::uint16_t EM_NCPU = 56;            /* Sony nCPU embedded RISC */
+        inline static constexpr std::uint16_t EM_NDR1 = 57;            /* Denso NDR1 microprocessor */
+        inline static constexpr std::uint16_t EM_STARCORE = 58;        /* Motorola Start*Core processor */
+        inline static constexpr std::uint16_t EM_ME16 = 59;            /* Toyota ME16 processor */
+        inline static constexpr std::uint16_t EM_ST100 = 60;           /* STMicroelectronic ST100 processor */
+        inline static constexpr std::uint16_t EM_TINYJ = 61;           /* Advanced Logic Corp. Tinyj emb.fam */
+        inline static constexpr std::uint16_t EM_X86_64 = 62;          /* AMD x86-64 architecture */
+        inline static constexpr std::uint16_t EM_PDSP = 63;            /* Sony DSP Processor */
+        inline static constexpr std::uint16_t EM_PDP10 = 64;           /* Digital PDP-10 */
+        inline static constexpr std::uint16_t EM_PDP11 = 65;           /* Digital PDP-11 */
+        inline static constexpr std::uint16_t EM_FX66 = 66;            /* Siemens FX66 microcontroller */
+        inline static constexpr std::uint16_t EM_ST9PLUS = 67;         /* STMicroelectronics ST9+ 8/16 mc */
+        inline static constexpr std::uint16_t EM_ST7 = 68;             /* STmicroelectronics ST7 8 bit mc */
+        inline static constexpr std::uint16_t EM_68HC16 = 69;          /* Motorola MC68HC16 microcontroller */
+        inline static constexpr std::uint16_t EM_68HC11 = 70;          /* Motorola MC68HC11 microcontroller */
+        inline static constexpr std::uint16_t EM_68HC08 = 71;          /* Motorola MC68HC08 microcontroller */
+        inline static constexpr std::uint16_t EM_68HC05 = 72;          /* Motorola MC68HC05 microcontroller */
+        inline static constexpr std::uint16_t EM_SVX = 73;             /* Silicon Graphics SVx */
+        inline static constexpr std::uint16_t EM_ST19 = 74;            /* STMicroelectronics ST19 8 bit mc */
+        inline static constexpr std::uint16_t EM_VAX = 75;             /* Digital VAX */
+        inline static constexpr std::uint16_t EM_CRIS = 76;            /* Axis Communications 32-bit emb.proc */
+        inline static constexpr std::uint16_t EM_JAVELIN = 77;         /* Infineon Technologies 32-bit emb.proc */
+        inline static constexpr std::uint16_t EM_FIREPATH = 78;        /* Element 14 64-bit DSP Processor */
+        inline static constexpr std::uint16_t EM_ZSP = 79;             /* LSI Logic 16-bit DSP Processor */
+        inline static constexpr std::uint16_t EM_MMIX = 80;            /* Donald Knuth's educational 64-bit proc */
+        inline static constexpr std::uint16_t EM_HUANY = 81;           /* Harvard University machine-independent object files */
+        inline static constexpr std::uint16_t EM_PRISM = 82;           /* SiTera Prism */
+        inline static constexpr std::uint16_t EM_AVR = 83;             /* Atmel AVR 8-bit microcontroller */
+        inline static constexpr std::uint16_t EM_FR30 = 84;            /* Fujitsu FR30 */
+        inline static constexpr std::uint16_t EM_D10V = 85;            /* Mitsubishi D10V */
+        inline static constexpr std::uint16_t EM_D30V = 86;            /* Mitsubishi D30V */
+        inline static constexpr std::uint16_t EM_V850 = 87;            /* NEC v850 */
+        inline static constexpr std::uint16_t EM_M32R = 88;            /* Mitsubishi M32R */
+        inline static constexpr std::uint16_t EM_MN10300 = 89;         /* Matsushita MN10300 */
+        inline static constexpr std::uint16_t EM_MN10200 = 90;         /* Matsushita MN10200 */
+        inline static constexpr std::uint16_t EM_PJ = 91;              /* picoJava */
+        inline static constexpr std::uint16_t EM_OPENRISC = 92;        /* OpenRISC 32-bit embedded processor */
+        inline static constexpr std::uint16_t EM_ARC_COMPACT = 93;     /* ARC International ARCompact */
+        inline static constexpr std::uint16_t EM_XTENSA = 94;          /* Tensilica Xtensa Architecture */
+        inline static constexpr std::uint16_t EM_VIDEOCORE = 95;       /* Alphamosaic VideoCore */
+        inline static constexpr std::uint16_t EM_TMM_GPP = 96;         /* Thompson Multimedia General Purpose Proc */
+        inline static constexpr std::uint16_t EM_NS32K = 97;           /* National Semi. 32000 */
+        inline static constexpr std::uint16_t EM_TPC = 98;             /* Tenor Network TPC */
+        inline static constexpr std::uint16_t EM_SNP1K = 99;           /* Trebia SNP 1000 */
+        inline static constexpr std::uint16_t EM_ST200 = 100;          /* STMicroelectronics ST200 */
+        inline static constexpr std::uint16_t EM_IP2K = 101;           /* Ubicom IP2xxx */
+        inline static constexpr std::uint16_t EM_MAX = 102;            /* MAX processor */
+        inline static constexpr std::uint16_t EM_CR = 103;             /* National Semi. CompactRISC */
+        inline static constexpr std::uint16_t EM_F2MC16 = 104;         /* Fujitsu F2MC16 */
+        inline static constexpr std::uint16_t EM_MSP430 = 105;         /* Texas Instruments msp430 */
+        inline static constexpr std::uint16_t EM_BLACKFIN = 106;       /* Analog Devices Blackfin DSP */
+        inline static constexpr std::uint16_t EM_SE_C33 = 107;         /* Seiko Epson S1C33 family */
+        inline static constexpr std::uint16_t EM_SEP = 108;            /* Sharp embedded microprocessor */
+        inline static constexpr std::uint16_t EM_ARCA = 109;           /* Arca RISC */
+        inline static constexpr std::uint16_t EM_UNICORE = 110;        /* PKU-Unity & MPRC Peking Uni. mc series */
+        inline static constexpr std::uint16_t EM_EXCESS = 111;         /* eXcess configurable cpu */
+        inline static constexpr std::uint16_t EM_DXP = 112;            /* Icera Semi. Deep Execution Processor */
+        inline static constexpr std::uint16_t EM_ALTERA_NIOS2 = 113;   /* Altera Nios II */
+        inline static constexpr std::uint16_t EM_CRX = 114;            /* National Semi. CompactRISC CRX */
+        inline static constexpr std::uint16_t EM_XGATE = 115;          /* Motorola XGATE */
+        inline static constexpr std::uint16_t EM_C166 = 116;           /* Infineon C16x/XC16x */
+        inline static constexpr std::uint16_t EM_M16C = 117;           /* Renesas M16C */
+        inline static constexpr std::uint16_t EM_DSPIC30F = 118;       /* Microchip Technology dsPIC30F */
+        inline static constexpr std::uint16_t EM_CE = 119;             /* Freescale Communication Engine RISC */
+        inline static constexpr std::uint16_t EM_M32C = 120;           /* Renesas M32C */
         /* reserved 121-130 */
-        static constexpr std::uint16_t EM_TSK3000 = 131;        /* Altium TSK3000 */
-        static constexpr std::uint16_t EM_RS08 = 132;           /* Freescale RS08 */
-        static constexpr std::uint16_t EM_SHARC = 133;          /* Analog Devices SHARC family */
-        static constexpr std::uint16_t EM_ECOG2 = 134;          /* Cyan Technology eCOG2 */
-        static constexpr std::uint16_t EM_SCORE7 = 135;         /* Sunplus S+core7 RISC */
-        static constexpr std::uint16_t EM_DSP24 = 136;          /* New Japan Radio (NJR) 24-bit DSP */
-        static constexpr std::uint16_t EM_VIDEOCORE3 = 137;     /* Broadcom VideoCore III */
-        static constexpr std::uint16_t EM_LATTICEMICO32 = 138;  /* RISC for Lattice FPGA */
-        static constexpr std::uint16_t EM_SE_C17 = 139;         /* Seiko Epson C17 */
-        static constexpr std::uint16_t EM_TI_C6000 = 140;       /* Texas Instruments TMS320C6000 DSP */
-        static constexpr std::uint16_t EM_TI_C2000 = 141;       /* Texas Instruments TMS320C2000 DSP */
-        static constexpr std::uint16_t EM_TI_C5500 = 142;       /* Texas Instruments TMS320C55x DSP */
-        static constexpr std::uint16_t EM_TI_ARP32 = 143;       /* Texas Instruments App. Specific RISC */
-        static constexpr std::uint16_t EM_TI_PRU = 144;         /* Texas Instruments Prog. Realtime Unit */
+        inline static constexpr std::uint16_t EM_TSK3000 = 131;        /* Altium TSK3000 */
+        inline static constexpr std::uint16_t EM_RS08 = 132;           /* Freescale RS08 */
+        inline static constexpr std::uint16_t EM_SHARC = 133;          /* Analog Devices SHARC family */
+        inline static constexpr std::uint16_t EM_ECOG2 = 134;          /* Cyan Technology eCOG2 */
+        inline static constexpr std::uint16_t EM_SCORE7 = 135;         /* Sunplus S+core7 RISC */
+        inline static constexpr std::uint16_t EM_DSP24 = 136;          /* New Japan Radio (NJR) 24-bit DSP */
+        inline static constexpr std::uint16_t EM_VIDEOCORE3 = 137;     /* Broadcom VideoCore III */
+        inline static constexpr std::uint16_t EM_LATTICEMICO32 = 138;  /* RISC for Lattice FPGA */
+        inline static constexpr std::uint16_t EM_SE_C17 = 139;         /* Seiko Epson C17 */
+        inline static constexpr std::uint16_t EM_TI_C6000 = 140;       /* Texas Instruments TMS320C6000 DSP */
+        inline static constexpr std::uint16_t EM_TI_C2000 = 141;       /* Texas Instruments TMS320C2000 DSP */
+        inline static constexpr std::uint16_t EM_TI_C5500 = 142;       /* Texas Instruments TMS320C55x DSP */
+        inline static constexpr std::uint16_t EM_TI_ARP32 = 143;       /* Texas Instruments App. Specific RISC */
+        inline static constexpr std::uint16_t EM_TI_PRU = 144;         /* Texas Instruments Prog. Realtime Unit */
         /* reserved 145-159 */
-        static constexpr std::uint16_t EM_MMDSP_PLUS = 160;     /* STMicroelectronics 64bit VLIW DSP */
-        static constexpr std::uint16_t EM_CYPRESS_M8C = 161;    /* Cypress M8C */
-        static constexpr std::uint16_t EM_R32C = 162;           /* Renesas R32C */
-        static constexpr std::uint16_t EM_TRIMEDIA = 163;       /* NXP Semi. TriMedia */
-        static constexpr std::uint16_t EM_QDSP6 = 164;          /* QUALCOMM DSP6 */
-        static constexpr std::uint16_t EM_8051 = 165;           /* Intel 8051 and variants */
-        static constexpr std::uint16_t EM_STXP7X = 166;         /* STMicroelectronics STxP7x */
-        static constexpr std::uint16_t EM_NDS32 = 167;          /* Andes Tech. compact code emb. RISC */
-        static constexpr std::uint16_t EM_ECOG1X = 168;         /* Cyan Technology eCOG1X */
-        static constexpr std::uint16_t EM_MAXQ30 = 169;         /* Dallas Semi. MAXQ30 mc */
-        static constexpr std::uint16_t EM_XIMO16 = 170;         /* New Japan Radio (NJR) 16-bit DSP */
-        static constexpr std::uint16_t EM_MANIK = 171;          /* M2000 Reconfigurable RISC */
-        static constexpr std::uint16_t EM_CRAYNV2 = 172;        /* Cray NV2 vector architecture */
-        static constexpr std::uint16_t EM_RX = 173;             /* Renesas RX */
-        static constexpr std::uint16_t EM_METAG = 174;          /* Imagination Tech. META */
-        static constexpr std::uint16_t EM_MCST_ELBRUS = 175;    /* MCST Elbrus */
-        static constexpr std::uint16_t EM_ECOG16 = 176;         /* Cyan Technology eCOG16 */
-        static constexpr std::uint16_t EM_CR16 = 177;           /* National Semi. CompactRISC CR16 */
-        static constexpr std::uint16_t EM_ETPU = 178;           /* Freescale Extended Time Processing Unit */
-        static constexpr std::uint16_t EM_SLE9X = 179;          /* Infineon Tech. SLE9X */
-        static constexpr std::uint16_t EM_L10M = 180;           /* Intel L10M */
-        static constexpr std::uint16_t EM_K10M = 181;           /* Intel K10M */
+        inline static constexpr std::uint16_t EM_MMDSP_PLUS = 160;     /* STMicroelectronics 64bit VLIW DSP */
+        inline static constexpr std::uint16_t EM_CYPRESS_M8C = 161;    /* Cypress M8C */
+        inline static constexpr std::uint16_t EM_R32C = 162;           /* Renesas R32C */
+        inline static constexpr std::uint16_t EM_TRIMEDIA = 163;       /* NXP Semi. TriMedia */
+        inline static constexpr std::uint16_t EM_QDSP6 = 164;          /* QUALCOMM DSP6 */
+        inline static constexpr std::uint16_t EM_8051 = 165;           /* Intel 8051 and variants */
+        inline static constexpr std::uint16_t EM_STXP7X = 166;         /* STMicroelectronics STxP7x */
+        inline static constexpr std::uint16_t EM_NDS32 = 167;          /* Andes Tech. compact code emb. RISC */
+        inline static constexpr std::uint16_t EM_ECOG1X = 168;         /* Cyan Technology eCOG1X */
+        inline static constexpr std::uint16_t EM_MAXQ30 = 169;         /* Dallas Semi. MAXQ30 mc */
+        inline static constexpr std::uint16_t EM_XIMO16 = 170;         /* New Japan Radio (NJR) 16-bit DSP */
+        inline static constexpr std::uint16_t EM_MANIK = 171;          /* M2000 Reconfigurable RISC */
+        inline static constexpr std::uint16_t EM_CRAYNV2 = 172;        /* Cray NV2 vector architecture */
+        inline static constexpr std::uint16_t EM_RX = 173;             /* Renesas RX */
+        inline static constexpr std::uint16_t EM_METAG = 174;          /* Imagination Tech. META */
+        inline static constexpr std::uint16_t EM_MCST_ELBRUS = 175;    /* MCST Elbrus */
+        inline static constexpr std::uint16_t EM_ECOG16 = 176;         /* Cyan Technology eCOG16 */
+        inline static constexpr std::uint16_t EM_CR16 = 177;           /* National Semi. CompactRISC CR16 */
+        inline static constexpr std::uint16_t EM_ETPU = 178;           /* Freescale Extended Time Processing Unit */
+        inline static constexpr std::uint16_t EM_SLE9X = 179;          /* Infineon Tech. SLE9X */
+        inline static constexpr std::uint16_t EM_L10M = 180;           /* Intel L10M */
+        inline static constexpr std::uint16_t EM_K10M = 181;           /* Intel K10M */
         /* reserved 182 */
-        static constexpr std::uint16_t EM_AARCH64 = 183;        /* ARM AARCH64 */
+        inline static constexpr std::uint16_t EM_AARCH64 = 183;        /* ARM AARCH64 */
         /* reserved 184 */
-        static constexpr std::uint16_t EM_AVR32 = 185;          /* Amtel 32-bit microprocessor */
-        static constexpr std::uint16_t EM_STM8 = 186;           /* STMicroelectronics STM8 */
-        static constexpr std::uint16_t EM_TILE64 = 187;         /* Tilera TILE64 */
-        static constexpr std::uint16_t EM_TILEPRO = 188;        /* Tilera TILEPro */
-        static constexpr std::uint16_t EM_MICROBLAZE = 189;     /* Xilinx MicroBlaze */
-        static constexpr std::uint16_t EM_CUDA = 190;           /* NVIDIA CUDA */
-        static constexpr std::uint16_t EM_TILEGX = 191;         /* Tilera TILE-Gx */
-        static constexpr std::uint16_t EM_CLOUDSHIELD = 192;    /* CloudShield */
-        static constexpr std::uint16_t EM_COREA_1ST = 193;      /* KIPO-KAIST Core-A 1st gen. */
-        static constexpr std::uint16_t EM_COREA_2ND = 194;      /* KIPO-KAIST Core-A 2nd gen. */
-        static constexpr std::uint16_t EM_ARCV2 = 195;          /* Synopsys ARCv2 ISA.  */
-        static constexpr std::uint16_t EM_OPEN8 = 196;          /* Open8 RISC */
-        static constexpr std::uint16_t EM_RL78 = 197;           /* Renesas RL78 */
-        static constexpr std::uint16_t EM_VIDEOCORE5 = 198;     /* Broadcom VideoCore V */
-        static constexpr std::uint16_t EM_78KOR = 199;          /* Renesas 78KOR */
-        static constexpr std::uint16_t EM_56800EX = 200;        /* Freescale 56800EX DSC */
-        static constexpr std::uint16_t EM_BA1 = 201;            /* Beyond BA1 */
-        static constexpr std::uint16_t EM_BA2 = 202;            /* Beyond BA2 */
-        static constexpr std::uint16_t EM_XCORE = 203;          /* XMOS xCORE */
-        static constexpr std::uint16_t EM_MCHP_PIC = 204;       /* Microchip 8-bit PIC(r) */
-        static constexpr std::uint16_t EM_INTELGT = 205;        /* Intel Graphics Technology */
+        inline static constexpr std::uint16_t EM_AVR32 = 185;          /* Amtel 32-bit microprocessor */
+        inline static constexpr std::uint16_t EM_STM8 = 186;           /* STMicroelectronics STM8 */
+        inline static constexpr std::uint16_t EM_TILE64 = 187;         /* Tilera TILE64 */
+        inline static constexpr std::uint16_t EM_TILEPRO = 188;        /* Tilera TILEPro */
+        inline static constexpr std::uint16_t EM_MICROBLAZE = 189;     /* Xilinx MicroBlaze */
+        inline static constexpr std::uint16_t EM_CUDA = 190;           /* NVIDIA CUDA */
+        inline static constexpr std::uint16_t EM_TILEGX = 191;         /* Tilera TILE-Gx */
+        inline static constexpr std::uint16_t EM_CLOUDSHIELD = 192;    /* CloudShield */
+        inline static constexpr std::uint16_t EM_COREA_1ST = 193;      /* KIPO-KAIST Core-A 1st gen. */
+        inline static constexpr std::uint16_t EM_COREA_2ND = 194;      /* KIPO-KAIST Core-A 2nd gen. */
+        inline static constexpr std::uint16_t EM_ARCV2 = 195;          /* Synopsys ARCv2 ISA.  */
+        inline static constexpr std::uint16_t EM_OPEN8 = 196;          /* Open8 RISC */
+        inline static constexpr std::uint16_t EM_RL78 = 197;           /* Renesas RL78 */
+        inline static constexpr std::uint16_t EM_VIDEOCORE5 = 198;     /* Broadcom VideoCore V */
+        inline static constexpr std::uint16_t EM_78KOR = 199;          /* Renesas 78KOR */
+        inline static constexpr std::uint16_t EM_56800EX = 200;        /* Freescale 56800EX DSC */
+        inline static constexpr std::uint16_t EM_BA1 = 201;            /* Beyond BA1 */
+        inline static constexpr std::uint16_t EM_BA2 = 202;            /* Beyond BA2 */
+        inline static constexpr std::uint16_t EM_XCORE = 203;          /* XMOS xCORE */
+        inline static constexpr std::uint16_t EM_MCHP_PIC = 204;       /* Microchip 8-bit PIC(r) */
+        inline static constexpr std::uint16_t EM_INTELGT = 205;        /* Intel Graphics Technology */
         /* reserved 206-209 */
-        static constexpr std::uint16_t EM_KM32 = 210;           /* KM211 KM32 */
-        static constexpr std::uint16_t EM_KMX32 = 211;          /* KM211 KMX32 */
-        static constexpr std::uint16_t EM_EMX16 = 212;          /* KM211 KMX16 */
-        static constexpr std::uint16_t EM_EMX8 = 213;           /* KM211 KMX8 */
-        static constexpr std::uint16_t EM_KVARC = 214;          /* KM211 KVARC */
-        static constexpr std::uint16_t EM_CDP = 215;            /* Paneve CDP */
-        static constexpr std::uint16_t EM_COGE = 216;           /* Cognitive Smart Memory Processor */
-        static constexpr std::uint16_t EM_COOL = 217;           /* Bluechip CoolEngine */
-        static constexpr std::uint16_t EM_NORC = 218;           /* Nanoradio Optimized RISC */
-        static constexpr std::uint16_t EM_CSR_KALIMBA = 219;    /* CSR Kalimba */
-        static constexpr std::uint16_t EM_Z80 = 220;            /* Zilog Z80 */
-        static constexpr std::uint16_t EM_VISIUM = 221;         /* Controls and Data Services VISIUMcore */
-        static constexpr std::uint16_t EM_FT32 = 222;           /* FTDI Chip FT32 */
-        static constexpr std::uint16_t EM_MOXIE = 223;          /* Moxie processor */
-        static constexpr std::uint16_t EM_AMDGPU = 224;         /* AMD GPU */
+        inline static constexpr std::uint16_t EM_KM32 = 210;           /* KM211 KM32 */
+        inline static constexpr std::uint16_t EM_KMX32 = 211;          /* KM211 KMX32 */
+        inline static constexpr std::uint16_t EM_EMX16 = 212;          /* KM211 KMX16 */
+        inline static constexpr std::uint16_t EM_EMX8 = 213;           /* KM211 KMX8 */
+        inline static constexpr std::uint16_t EM_KVARC = 214;          /* KM211 KVARC */
+        inline static constexpr std::uint16_t EM_CDP = 215;            /* Paneve CDP */
+        inline static constexpr std::uint16_t EM_COGE = 216;           /* Cognitive Smart Memory Processor */
+        inline static constexpr std::uint16_t EM_COOL = 217;           /* Bluechip CoolEngine */
+        inline static constexpr std::uint16_t EM_NORC = 218;           /* Nanoradio Optimized RISC */
+        inline static constexpr std::uint16_t EM_CSR_KALIMBA = 219;    /* CSR Kalimba */
+        inline static constexpr std::uint16_t EM_Z80 = 220;            /* Zilog Z80 */
+        inline static constexpr std::uint16_t EM_VISIUM = 221;         /* Controls and Data Services VISIUMcore */
+        inline static constexpr std::uint16_t EM_FT32 = 222;           /* FTDI Chip FT32 */
+        inline static constexpr std::uint16_t EM_MOXIE = 223;          /* Moxie processor */
+        inline static constexpr std::uint16_t EM_AMDGPU = 224;         /* AMD GPU */
         /* reserved 225-242 */
-        static constexpr std::uint16_t EM_RISCV = 243;          /* RISC-V */
-        static constexpr std::uint16_t EM_BPF = 247;            /* Linux BPF -- in-kernel virtual machine */
-        static constexpr std::uint16_t EM_CSKY = 252;           /* C-SKY */
-        static constexpr std::uint16_t EM_LOONGARCH = 258;      /* LoongArch */
-        static constexpr std::uint16_t EM_NUM = 259;
-        static constexpr std::uint16_t EM_ARC_A5 = EM_ARC_COMPACT;
-        static constexpr std::uint16_t EM_ALPHA = 0x9026;
+        inline static constexpr std::uint16_t EM_RISCV = 243;          /* RISC-V */
+        inline static constexpr std::uint16_t EM_BPF = 247;            /* Linux BPF -- in-kernel virtual machine */
+        inline static constexpr std::uint16_t EM_CSKY = 252;           /* C-SKY */
+        inline static constexpr std::uint16_t EM_LOONGARCH = 258;      /* LoongArch */
+        inline static constexpr std::uint16_t EM_NUM = 259;
+        inline static constexpr std::uint16_t EM_ARC_A5 = EM_ARC_COMPACT;
+        inline static constexpr std::uint16_t EM_ALPHA = 0x9026;
         std::uint16_t e_machine;  /* Required architecture */
 
-        static constexpr byte EV_NONE = 0;       /* Invalid version */
-        static constexpr byte EV_CURRENT = 1;    /* Current version */
+        inline static constexpr byte EV_NONE = 0;       /* Invalid version */
+        inline static constexpr byte EV_CURRENT = 1;    /* Current version */
         std::uint32_t e_version;  /* Object file version */
 
         std::uint64_t e_entry;      /* Entry point virtual address */
@@ -340,75 +340,75 @@ namespace elf
     typedef struct elf_section_header
     {
         // Special indexes
-        static constexpr std::uint16_t SHN_UNDEF = 0;           /* Undefined, missing, irrelevant */
-        static constexpr std::uint16_t SHN_LORESERVE = 0xff00;  /* First of reserved range */
-        static constexpr std::uint16_t SHN_LOPROC = 0xff00;     /* First processor-specific */
-        static constexpr std::uint16_t SHN_HIPROC = 0xff1f;     /* Last processor-specific */
-        static constexpr std::uint16_t SHN_LOOS = 0xff20;       /* First operating system-specific */
-        static constexpr std::uint16_t SHN_HIOS = 0xff3f;       /* Last operating system-specific */
-        static constexpr std::uint16_t SHN_ABS = 0xfff1;        /* Absolute values */
-        static constexpr std::uint16_t SHN_COMMON = 0xfff2;     /* Common data */
-        static constexpr std::uint16_t SHN_XINDEX = 0xffff;     /* Escape -- index stored elsewhere */
-        static constexpr std::uint16_t SHN_HIRESERVE = 0xffff;  /* Last of reserved range */
+        inline static constexpr std::uint16_t SHN_UNDEF = 0;           /* Undefined, missing, irrelevant */
+        inline static constexpr std::uint16_t SHN_LORESERVE = 0xff00;  /* First of reserved range */
+        inline static constexpr std::uint16_t SHN_LOPROC = 0xff00;     /* First processor-specific */
+        inline static constexpr std::uint16_t SHN_HIPROC = 0xff1f;     /* Last processor-specific */
+        inline static constexpr std::uint16_t SHN_LOOS = 0xff20;       /* First operating system-specific */
+        inline static constexpr std::uint16_t SHN_HIOS = 0xff3f;       /* Last operating system-specific */
+        inline static constexpr std::uint16_t SHN_ABS = 0xfff1;        /* Absolute values */
+        inline static constexpr std::uint16_t SHN_COMMON = 0xfff2;     /* Common data */
+        inline static constexpr std::uint16_t SHN_XINDEX = 0xffff;     /* Escape -- index stored elsewhere */
+        inline static constexpr std::uint16_t SHN_HIRESERVE = 0xffff;  /* Last of reserved range */
 
         std::uint32_t sh_name;       /* Section name (string table index) */
 
-        static constexpr std::uint32_t SHT_NULL = 0;                     /* Inactive */
-        static constexpr std::uint32_t SHT_PROGBITS = 1;                 /* Program-defined contents */
-        static constexpr std::uint32_t SHT_SYMTAB = 2;                   /* Symbol table */
-        static constexpr std::uint32_t SHT_STRTAB = 3;                   /* String table */
-        static constexpr std::uint32_t SHT_RELA = 4;                     /* Relocation entries with addends */
-        static constexpr std::uint32_t SHT_HASH = 5;                     /* Symbol hash table */
-        static constexpr std::uint32_t SHT_DYNAMIC = 6;                  /* Dynamic linking information */
-        static constexpr std::uint32_t SHT_NOTE = 7;                     /* Notes */
-        static constexpr std::uint32_t SHT_NOBITS = 8;                   /* Program space with no data e.g. bss */
-        static constexpr std::uint32_t SHT_REL = 9;                      /* Relocation entries without addends */
-        static constexpr std::uint32_t SHT_SHLIB = 10;                   /* Reserved */
-        static constexpr std::uint32_t SHT_DYNSYM = 11;                  /* Dynmic symbol table */
-        static constexpr std::uint32_t SHT_INIT_ARRAY = 14;              /* Array of constructors */
-        static constexpr std::uint32_t SHT_FINI_ARRAY = 15;              /* Array of destructors */
-        static constexpr std::uint32_t SHT_PREINIT_ARRAY = 16;           /* Array of pre-constructors */
-        static constexpr std::uint32_t SHT_GROUP = 17;                   /* Section group */
-        static constexpr std::uint32_t SHT_SYMTAB_SHNDX = 18;            /* Extended section indices */
+        inline static constexpr std::uint32_t SHT_NULL = 0;                     /* Inactive */
+        inline static constexpr std::uint32_t SHT_PROGBITS = 1;                 /* Program-defined contents */
+        inline static constexpr std::uint32_t SHT_SYMTAB = 2;                   /* Symbol table */
+        inline static constexpr std::uint32_t SHT_STRTAB = 3;                   /* String table */
+        inline static constexpr std::uint32_t SHT_RELA = 4;                     /* Relocation entries with addends */
+        inline static constexpr std::uint32_t SHT_HASH = 5;                     /* Symbol hash table */
+        inline static constexpr std::uint32_t SHT_DYNAMIC = 6;                  /* Dynamic linking information */
+        inline static constexpr std::uint32_t SHT_NOTE = 7;                     /* Notes */
+        inline static constexpr std::uint32_t SHT_NOBITS = 8;                   /* Program space with no data e.g. bss */
+        inline static constexpr std::uint32_t SHT_REL = 9;                      /* Relocation entries without addends */
+        inline static constexpr std::uint32_t SHT_SHLIB = 10;                   /* Reserved */
+        inline static constexpr std::uint32_t SHT_DYNSYM = 11;                  /* Dynmic symbol table */
+        inline static constexpr std::uint32_t SHT_INIT_ARRAY = 14;              /* Array of constructors */
+        inline static constexpr std::uint32_t SHT_FINI_ARRAY = 15;              /* Array of destructors */
+        inline static constexpr std::uint32_t SHT_PREINIT_ARRAY = 16;           /* Array of pre-constructors */
+        inline static constexpr std::uint32_t SHT_GROUP = 17;                   /* Section group */
+        inline static constexpr std::uint32_t SHT_SYMTAB_SHNDX = 18;            /* Extended section indices */
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L447-L466
-        static constexpr std::uint32_t SHT_RELR = 19;                    /* RELR relative relocations */
-        static constexpr std::uint32_t SHT_NUM = 20;                     /* Number of defined types.  */
-        static constexpr std::uint32_t SHT_LOOS = 0x60000000;            /* First of OS specific semantics */
-        static constexpr std::uint32_t SHT_GNU_ATTRIBUTES = 0x6ffffff5;  /* Object attributes.  */
-        static constexpr std::uint32_t SHT_GNU_HASH = 0x6ffffff6;        /* GNU-style hash table.  */
-        static constexpr std::uint32_t SHT_GNU_LIBLIST = 0x6ffffff7;     /* Prelink library list */
-        static constexpr std::uint32_t SHT_CHECKSUM = 0x6ffffff8;        /* Checksum for DSO content.  */
-        static constexpr std::uint32_t SHT_LOSUNW = 0x6ffffffa;          /* Sun-specific low bound.  */
-        static constexpr std::uint32_t SHT_SUNW_move = 0x6ffffffa;
-        static constexpr std::uint32_t SHT_SUNW_COMDAT = 0x6ffffffb;
-        static constexpr std::uint32_t SHT_SUNW_syminfo = 0x6ffffffc;
-        static constexpr std::uint32_t SHT_GNU_verdef = 0x6ffffffd;      /* Version definition section.  */
-        static constexpr std::uint32_t SHT_GNU_verneed = 0x6ffffffe;     /* Version needs section.  */
-        static constexpr std::uint32_t SHT_GNU_versym = 0x6fffffff;      /* Version symbol table.  */
-        static constexpr std::uint32_t SHT_HISUNW = 0x6fffffff;          /* Sun-specific high bound.  */
-        static constexpr std::uint32_t SHT_HIOS = 0x6fffffff;            /* Last of OS specific semantics */
-        static constexpr std::uint32_t SHT_LOPROC = 0x70000000;          /* First of processor-specific type */
-        static constexpr std::uint32_t SHT_HIPROC = 0x7fffffff;          /* Last of processor-specific type */
-        static constexpr std::uint32_t SHT_LOUSER = 0x80000000;          /* First of reserved range */
-        static constexpr std::uint32_t SHT_HIUSER = 0xffffffff;          /* Last of reserved range */
+        inline static constexpr std::uint32_t SHT_RELR = 19;                    /* RELR relative relocations */
+        inline static constexpr std::uint32_t SHT_NUM = 20;                     /* Number of defined types.  */
+        inline static constexpr std::uint32_t SHT_LOOS = 0x60000000;            /* First of OS specific semantics */
+        inline static constexpr std::uint32_t SHT_GNU_ATTRIBUTES = 0x6ffffff5;  /* Object attributes.  */
+        inline static constexpr std::uint32_t SHT_GNU_HASH = 0x6ffffff6;        /* GNU-style hash table.  */
+        inline static constexpr std::uint32_t SHT_GNU_LIBLIST = 0x6ffffff7;     /* Prelink library list */
+        inline static constexpr std::uint32_t SHT_CHECKSUM = 0x6ffffff8;        /* Checksum for DSO content.  */
+        inline static constexpr std::uint32_t SHT_LOSUNW = 0x6ffffffa;          /* Sun-specific low bound.  */
+        inline static constexpr std::uint32_t SHT_SUNW_move = 0x6ffffffa;
+        inline static constexpr std::uint32_t SHT_SUNW_COMDAT = 0x6ffffffb;
+        inline static constexpr std::uint32_t SHT_SUNW_syminfo = 0x6ffffffc;
+        inline static constexpr std::uint32_t SHT_GNU_verdef = 0x6ffffffd;      /* Version definition section.  */
+        inline static constexpr std::uint32_t SHT_GNU_verneed = 0x6ffffffe;     /* Version needs section.  */
+        inline static constexpr std::uint32_t SHT_GNU_versym = 0x6fffffff;      /* Version symbol table.  */
+        inline static constexpr std::uint32_t SHT_HISUNW = 0x6fffffff;          /* Sun-specific high bound.  */
+        inline static constexpr std::uint32_t SHT_HIOS = 0x6fffffff;            /* Last of OS specific semantics */
+        inline static constexpr std::uint32_t SHT_LOPROC = 0x70000000;          /* First of processor-specific type */
+        inline static constexpr std::uint32_t SHT_HIPROC = 0x7fffffff;          /* Last of processor-specific type */
+        inline static constexpr std::uint32_t SHT_LOUSER = 0x80000000;          /* First of reserved range */
+        inline static constexpr std::uint32_t SHT_HIUSER = 0xffffffff;          /* Last of reserved range */
         std::uint32_t sh_type;       /* Section type */
 
-        static constexpr std::uint64_t SHF_WRITE = 0x1;               /* Writable */
-        static constexpr std::uint64_t SHF_ALLOC = 0x2;               /* Occupies memory during execution */
-        static constexpr std::uint64_t SHF_EXECINSTR = 0x4;           /* Executable */
-        static constexpr std::uint64_t SHF_MERGE = 0x10;              /* Might be merged */
-        static constexpr std::uint64_t SHF_STRINGS = 0x20;            /* Contains nul-terminated strings */
-        static constexpr std::uint64_t SHF_INFO_LINK = 0x40;          /* `sh_info` contains SHT index */
-        static constexpr std::uint64_t SHF_LINK_ORDER = 0x80;         /* Preserve order after combining */
-        static constexpr std::uint64_t SHF_OS_NONCONFORMING = 0x100;  /* Non-standard OS specific handling required */
-        static constexpr std::uint64_t SHF_GROUP = 0x200;             /* Section is member of a group */
-        static constexpr std::uint64_t SHF_TLS = 0x400;               /* Section holds thread-local data */
-        static constexpr std::uint64_t SHF_MASKOS = 0x0ff00000;       /* All bits included are for OS-specific flags */
-        static constexpr std::uint64_t SHF_MASKPROC = 0xf0000000;     /* All bits included are for processor-specific flags */
+        inline static constexpr std::uint64_t SHF_WRITE = 0x1;               /* Writable */
+        inline static constexpr std::uint64_t SHF_ALLOC = 0x2;               /* Occupies memory during execution */
+        inline static constexpr std::uint64_t SHF_EXECINSTR = 0x4;           /* Executable */
+        inline static constexpr std::uint64_t SHF_MERGE = 0x10;              /* Might be merged */
+        inline static constexpr std::uint64_t SHF_STRINGS = 0x20;            /* Contains nul-terminated strings */
+        inline static constexpr std::uint64_t SHF_INFO_LINK = 0x40;          /* `sh_info` contains SHT index */
+        inline static constexpr std::uint64_t SHF_LINK_ORDER = 0x80;         /* Preserve order after combining */
+        inline static constexpr std::uint64_t SHF_OS_NONCONFORMING = 0x100;  /* Non-standard OS specific handling required */
+        inline static constexpr std::uint64_t SHF_GROUP = 0x200;             /* Section is member of a group */
+        inline static constexpr std::uint64_t SHF_TLS = 0x400;               /* Section holds thread-local data */
+        inline static constexpr std::uint64_t SHF_MASKOS = 0x0ff00000;       /* All bits included are for OS-specific flags */
+        inline static constexpr std::uint64_t SHF_MASKPROC = 0xf0000000;     /* All bits included are for processor-specific flags */
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L484-L488
-        static constexpr std::uint64_t SHF_GNU_RETAIN = (1 << 21);    /* Not to be GCed by linker.  */
-        static constexpr std::uint64_t SHF_ORDERED = (1 << 30);       /* Special ordering requirement (Solaris).  */
-        static constexpr std::uint64_t SHF_EXCLUDE = (1U << 31);      /* Section is excluded unless referenced or allocated (Solaris).*/
+        inline static constexpr std::uint64_t SHF_GNU_RETAIN = (1 << 21);    /* Not to be GCed by linker.  */
+        inline static constexpr std::uint64_t SHF_ORDERED = (1 << 30);       /* Special ordering requirement (Solaris).  */
+        inline static constexpr std::uint64_t SHF_EXCLUDE = (1U << 31);      /* Section is excluded unless referenced or allocated (Solaris).*/
         std::uint64_t sh_flags;      /* Section flags */
 
         std::uint64_t sh_addr;       /* Section virtual address at execution */
@@ -422,43 +422,43 @@ namespace elf
         const char *sh_name_str;     /* Resolved section name */
     } elf_section_header;
 
-    static constexpr std::uint32_t GRP_COMDAT = 1;             /* Mark group as COMDAT */
-    static constexpr std::uint32_t GRP_MASKOS = 0x0ff00000;    /* All bits included are for OS-specific flags */
-    static constexpr std::uint32_t GRP_MASKPROC = 0xf0000000;  /* All bits included are for processor-specific flags */
+    inline static constexpr std::uint32_t GRP_COMDAT = 1;             /* Mark group as COMDAT */
+    inline static constexpr std::uint32_t GRP_MASKOS = 0x0ff00000;    /* All bits included are for OS-specific flags */
+    inline static constexpr std::uint32_t GRP_MASKPROC = 0xf0000000;  /* All bits included are for processor-specific flags */
 
     // Same memory layout as Elf64_Phdr for optimization
     typedef struct elf_program_header
     {
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L717-L738
-        static constexpr std::uint32_t PT_NULL = 0;                   /* Program header table entry unused */
-        static constexpr std::uint32_t PT_LOAD = 1;                   /* Loadable program segment */
-        static constexpr std::uint32_t PT_DYNAMIC = 2;                /* Dynamic linking information */
-        static constexpr std::uint32_t PT_INTERP = 3;                 /* Program interpreter */
-        static constexpr std::uint32_t PT_NOTE = 4;                   /* Auxiliary information */
-        static constexpr std::uint32_t PT_SHLIB = 5;                  /* Reserved */
-        static constexpr std::uint32_t PT_PHDR = 6;                   /* Entry for header table itself */
-        static constexpr std::uint32_t PT_TLS = 7;                    /* Thread-local storage segment */
-        static constexpr std::uint32_t PT_NUM = 8;                    /* Number of defined types */
-        static constexpr std::uint32_t PT_LOOS = 0x60000000;          /* Start of OS-specific */
-        static constexpr std::uint32_t PT_GNU_EH_FRAME = 0x6474e550;  /* GCC .eh_frame_hdr segment */
-        static constexpr std::uint32_t PT_GNU_STACK = 0x6474e551;     /* Indicates stack executability */
-        static constexpr std::uint32_t PT_GNU_RELRO = 0x6474e552;     /* Read-only after relocation */
-        static constexpr std::uint32_t PT_GNU_PROPERTY = 0x6474e553;  /* GNU property */
-        static constexpr std::uint32_t PT_GNU_SFRAME = 0x6474e554;    /* SFrame segment.  */
-        static constexpr std::uint32_t PT_LOSUNW = 0x6ffffffa;
-        static constexpr std::uint32_t PT_SUNWBSS = 0x6ffffffa;       /* Sun Specific segment */
-        static constexpr std::uint32_t PT_SUNWSTACK = 0x6ffffffb;     /* Stack segment */
-        static constexpr std::uint32_t PT_HISUNW = 0x6fffffff;
-        static constexpr std::uint32_t PT_HIOS = 0x6fffffff;          /* End of OS-specific */
-        static constexpr std::uint32_t PT_LOPROC = 0x70000000;        /* Start of processor-specific */
-        static constexpr std::uint32_t PT_HIPROC = 0x7fffffff;        /* End of processor-specific */
+        inline static constexpr std::uint32_t PT_NULL = 0;                   /* Program header table entry unused */
+        inline static constexpr std::uint32_t PT_LOAD = 1;                   /* Loadable program segment */
+        inline static constexpr std::uint32_t PT_DYNAMIC = 2;                /* Dynamic linking information */
+        inline static constexpr std::uint32_t PT_INTERP = 3;                 /* Program interpreter */
+        inline static constexpr std::uint32_t PT_NOTE = 4;                   /* Auxiliary information */
+        inline static constexpr std::uint32_t PT_SHLIB = 5;                  /* Reserved */
+        inline static constexpr std::uint32_t PT_PHDR = 6;                   /* Entry for header table itself */
+        inline static constexpr std::uint32_t PT_TLS = 7;                    /* Thread-local storage segment */
+        inline static constexpr std::uint32_t PT_NUM = 8;                    /* Number of defined types */
+        inline static constexpr std::uint32_t PT_LOOS = 0x60000000;          /* Start of OS-specific */
+        inline static constexpr std::uint32_t PT_GNU_EH_FRAME = 0x6474e550;  /* GCC .eh_frame_hdr segment */
+        inline static constexpr std::uint32_t PT_GNU_STACK = 0x6474e551;     /* Indicates stack executability */
+        inline static constexpr std::uint32_t PT_GNU_RELRO = 0x6474e552;     /* Read-only after relocation */
+        inline static constexpr std::uint32_t PT_GNU_PROPERTY = 0x6474e553;  /* GNU property */
+        inline static constexpr std::uint32_t PT_GNU_SFRAME = 0x6474e554;    /* SFrame segment.  */
+        inline static constexpr std::uint32_t PT_LOSUNW = 0x6ffffffa;
+        inline static constexpr std::uint32_t PT_SUNWBSS = 0x6ffffffa;       /* Sun Specific segment */
+        inline static constexpr std::uint32_t PT_SUNWSTACK = 0x6ffffffb;     /* Stack segment */
+        inline static constexpr std::uint32_t PT_HISUNW = 0x6fffffff;
+        inline static constexpr std::uint32_t PT_HIOS = 0x6fffffff;          /* End of OS-specific */
+        inline static constexpr std::uint32_t PT_LOPROC = 0x70000000;        /* Start of processor-specific */
+        inline static constexpr std::uint32_t PT_HIPROC = 0x7fffffff;        /* End of processor-specific */
         std::uint32_t p_type;    /* Segment type */
 
-        static constexpr std::uint32_t PF_X = 0x1;                /* Execute */
-        static constexpr std::uint32_t PF_W = 0x2;                /* Write */
-        static constexpr std::uint32_t PF_R = 0x4;                /* Read */
-        static constexpr std::uint32_t PF_MASKOS = 0x0ff00000;    /* All bits included are for OS-specific flags */
-        static constexpr std::uint32_t PF_MASKPROC = 0xf0000000;  /* All bits included are for processor-specific flags */
+        inline static constexpr std::uint32_t PF_X = 0x1;                /* Execute */
+        inline static constexpr std::uint32_t PF_W = 0x2;                /* Write */
+        inline static constexpr std::uint32_t PF_R = 0x4;                /* Read */
+        inline static constexpr std::uint32_t PF_MASKOS = 0x0ff00000;    /* All bits included are for OS-specific flags */
+        inline static constexpr std::uint32_t PF_MASKPROC = 0xf0000000;  /* All bits included are for processor-specific flags */
         std::uint32_t p_flags;   /* Segment flags */
 
         std::uint64_t p_offset;  /* Segment file offset */
@@ -479,116 +479,116 @@ namespace elf
         std::uint16_t st_shndx;   /* Section index */
         const char *st_name_str;  /* Resolved symbol name */
 
-        static constexpr std::uint32_t STN_UNDEF = 0;  /* End of chain identifier */
+        inline static constexpr std::uint32_t STN_UNDEF = 0;  /* End of chain identifier */
     } elf_symbol;
 
     typedef struct elf_dynamic
     {
-        static constexpr std::int64_t DT_NULL = 0;               /* Marks end of dynamic section */
-        static constexpr std::int64_t DT_NEEDED = 1;             /* Name of needed library */
-        static constexpr std::int64_t DT_PLTRELSZ = 2;           /* Size in bytes of all PLT relocations */
-        static constexpr std::int64_t DT_PLTGOT = 3;             /* Processor defined value relating to PLT/GOT */
-        static constexpr std::int64_t DT_HASH = 4;               /* Address of the symbol hash table */
-        static constexpr std::int64_t DT_STRTAB = 5;             /* Address of the dynamic string table */
-        static constexpr std::int64_t DT_SYMTAB = 6;             /* Address of the dynamic symbol table */
-        static constexpr std::int64_t DT_RELA = 7;               /* Address of a relocation table with Elf*_Rela entries */
-        static constexpr std::int64_t DT_RELASZ = 8;             /* Total size in bytes of the DT_RELA relocation table */
-        static constexpr std::int64_t DT_RELAENT = 9;            /* Size in bytes of each DT_RELA relocation entry */
-        static constexpr std::int64_t DT_STRSZ = 10;             /* Size in bytes of the string table */
-        static constexpr std::int64_t DT_SYMENT = 11;            /* Size in bytes of each symbol table entry */
-        static constexpr std::int64_t DT_INIT = 12;              /* Address of the initialization function */
-        static constexpr std::int64_t DT_FINI = 13;              /* Address of the termination function */
-        static constexpr std::int64_t DT_SONAME = 14;            /* Shared object name (string table index) */
-        static constexpr std::int64_t DT_RPATH = 15;             /* Library search path (string table index) */
-        static constexpr std::int64_t DT_SYMBOLIC = 16;          /* Indicates "symbolic" linking */
-        static constexpr std::int64_t DT_REL = 17;               /* Address of a relocation table with Elf*_Rel entries */
-        static constexpr std::int64_t DT_RELSZ = 18;             /* Total size in bytes of the DT_REL relocation table */
-        static constexpr std::int64_t DT_RELENT = 19;            /* Size in bytes of each DT_REL relocation entry */
-        static constexpr std::int64_t DT_PLTREL = 20;            /* Type of relocation used for PLT */
-        static constexpr std::int64_t DT_DEBUG = 21;             /* Reserved for debugger */
-        static constexpr std::int64_t DT_TEXTREL = 22;           /* Object contains text relocations (non-writable segment) */
-        static constexpr std::int64_t DT_JMPREL = 23;            /* Address of the relocations associated with the PLT */
-        static constexpr std::int64_t DT_BIND_NOW = 24;          /* Process all relocations before execution */
-        static constexpr std::int64_t DT_INIT_ARRAY = 25;        /* Array of initialization functions */
-        static constexpr std::int64_t DT_FINI_ARRAY = 26;        /* Array of termination functions */
-        static constexpr std::int64_t DT_INIT_ARRAYSZ = 27;      /* Size of arrays in DT_INIT_ARRAY */
-        static constexpr std::int64_t DT_FINI_ARRAYSZ = 28;      /* Size of arrays in DT_FINI_ARRAY */
-        static constexpr std::int64_t DT_RUNPATH = 29;           /* Library search paths */
-        static constexpr std::int64_t DT_FLAGS = 30;             /* Flags for the object being loaded */
-        static constexpr std::int64_t DT_ENCODING = 32;          /* Values from here to DT_LOOS if even use d_ptr or odd uses d_val */
-        static constexpr std::int64_t DT_PREINIT_ARRAY = 32;     /* Array of pre-initialization functions */
-        static constexpr std::int64_t DT_PREINIT_ARRAYSZ = 33;   /* Size of array of pre-init functions */
+        inline static constexpr std::int64_t DT_NULL = 0;               /* Marks end of dynamic section */
+        inline static constexpr std::int64_t DT_NEEDED = 1;             /* Name of needed library */
+        inline static constexpr std::int64_t DT_PLTRELSZ = 2;           /* Size in bytes of all PLT relocations */
+        inline static constexpr std::int64_t DT_PLTGOT = 3;             /* Processor defined value relating to PLT/GOT */
+        inline static constexpr std::int64_t DT_HASH = 4;               /* Address of the symbol hash table */
+        inline static constexpr std::int64_t DT_STRTAB = 5;             /* Address of the dynamic string table */
+        inline static constexpr std::int64_t DT_SYMTAB = 6;             /* Address of the dynamic symbol table */
+        inline static constexpr std::int64_t DT_RELA = 7;               /* Address of a relocation table with Elf*_Rela entries */
+        inline static constexpr std::int64_t DT_RELASZ = 8;             /* Total size in bytes of the DT_RELA relocation table */
+        inline static constexpr std::int64_t DT_RELAENT = 9;            /* Size in bytes of each DT_RELA relocation entry */
+        inline static constexpr std::int64_t DT_STRSZ = 10;             /* Size in bytes of the string table */
+        inline static constexpr std::int64_t DT_SYMENT = 11;            /* Size in bytes of each symbol table entry */
+        inline static constexpr std::int64_t DT_INIT = 12;              /* Address of the initialization function */
+        inline static constexpr std::int64_t DT_FINI = 13;              /* Address of the termination function */
+        inline static constexpr std::int64_t DT_SONAME = 14;            /* Shared object name (string table index) */
+        inline static constexpr std::int64_t DT_RPATH = 15;             /* Library search path (string table index) */
+        inline static constexpr std::int64_t DT_SYMBOLIC = 16;          /* Indicates "symbolic" linking */
+        inline static constexpr std::int64_t DT_REL = 17;               /* Address of a relocation table with Elf*_Rel entries */
+        inline static constexpr std::int64_t DT_RELSZ = 18;             /* Total size in bytes of the DT_REL relocation table */
+        inline static constexpr std::int64_t DT_RELENT = 19;            /* Size in bytes of each DT_REL relocation entry */
+        inline static constexpr std::int64_t DT_PLTREL = 20;            /* Type of relocation used for PLT */
+        inline static constexpr std::int64_t DT_DEBUG = 21;             /* Reserved for debugger */
+        inline static constexpr std::int64_t DT_TEXTREL = 22;           /* Object contains text relocations (non-writable segment) */
+        inline static constexpr std::int64_t DT_JMPREL = 23;            /* Address of the relocations associated with the PLT */
+        inline static constexpr std::int64_t DT_BIND_NOW = 24;          /* Process all relocations before execution */
+        inline static constexpr std::int64_t DT_INIT_ARRAY = 25;        /* Array of initialization functions */
+        inline static constexpr std::int64_t DT_FINI_ARRAY = 26;        /* Array of termination functions */
+        inline static constexpr std::int64_t DT_INIT_ARRAYSZ = 27;      /* Size of arrays in DT_INIT_ARRAY */
+        inline static constexpr std::int64_t DT_FINI_ARRAYSZ = 28;      /* Size of arrays in DT_FINI_ARRAY */
+        inline static constexpr std::int64_t DT_RUNPATH = 29;           /* Library search paths */
+        inline static constexpr std::int64_t DT_FLAGS = 30;             /* Flags for the object being loaded */
+        inline static constexpr std::int64_t DT_ENCODING = 32;          /* Values from here to DT_LOOS if even use d_ptr or odd uses d_val */
+        inline static constexpr std::int64_t DT_PREINIT_ARRAY = 32;     /* Array of pre-initialization functions */
+        inline static constexpr std::int64_t DT_PREINIT_ARRAYSZ = 33;   /* Size of array of pre-init functions */
 
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L908-L912
-        static constexpr std::int64_t DT_SYMTAB_SHNDX = 34;      /* Address of SYMTAB_SHNDX section */
-        static constexpr std::int64_t DT_RELRSZ = 35;            /* Total size of RELR relative relocations */
-        static constexpr std::int64_t DT_RELR = 36;              /* Address of RELR relative relocations */
-        static constexpr std::int64_t DT_RELRENT = 37;           /* Size of one RELR relative relocaction */
-        static constexpr std::int64_t DT_NUM = 38;               /* Number used */
+        inline static constexpr std::int64_t DT_SYMTAB_SHNDX = 34;      /* Address of SYMTAB_SHNDX section */
+        inline static constexpr std::int64_t DT_RELRSZ = 35;            /* Total size of RELR relative relocations */
+        inline static constexpr std::int64_t DT_RELR = 36;              /* Address of RELR relative relocations */
+        inline static constexpr std::int64_t DT_RELRENT = 37;           /* Size of one RELR relative relocaction */
+        inline static constexpr std::int64_t DT_NUM = 38;               /* Number used */
 
-        static constexpr std::int64_t DT_LOOS = 0x6000000D;      /* Start of OS-specific */
-        static constexpr std::int64_t DT_HIOS = 0x6ffff000;      /* End of OS-specific */
-        static constexpr std::int64_t DT_LOPROC = 0x70000000;    /* Start of processor-specific */
-        static constexpr std::int64_t DT_HIPROC = 0x7fffffff;    /* End of processor-specific */
+        inline static constexpr std::int64_t DT_LOOS = 0x6000000D;      /* Start of OS-specific */
+        inline static constexpr std::int64_t DT_HIOS = 0x6ffff000;      /* End of OS-specific */
+        inline static constexpr std::int64_t DT_LOPROC = 0x70000000;    /* Start of processor-specific */
+        inline static constexpr std::int64_t DT_HIPROC = 0x7fffffff;    /* End of processor-specific */
 
         // https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L919-L983
         /* DT_* entries which fall between DT_VALRNGHI & DT_VALRNGLO use the
          Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's
          approach.  */
-        static constexpr std::int64_t DT_VALRNGLO = 0x6ffffd00;
-        static constexpr std::int64_t DT_GNU_PRELINKED = 0x6ffffdf5;   /* Prelinking timestamp */
-        static constexpr std::int64_t DT_GNU_CONFLICTSZ = 0x6ffffdf6;  /* Size of conflict section */
-        static constexpr std::int64_t DT_GNU_LIBLISTSZ = 0x6ffffdf7;   /* Size of library list */
-        static constexpr std::int64_t DT_CHECKSUM = 0x6ffffdf8;
-        static constexpr std::int64_t DT_PLTPADSZ = 0x6ffffdf9;
-        static constexpr std::int64_t DT_MOVEENT = 0x6ffffdfa;
-        static constexpr std::int64_t DT_MOVESZ = 0x6ffffdfb;
-        static constexpr std::int64_t DT_FEATURE_1 = 0x6ffffdfc;       /* Feature selection (DTF_*).  */
-        static constexpr std::int64_t DT_POSFLAG_1 = 0x6ffffdfd;       /* Flags for DT_* entries, effecting the following DT_* entry.  */
-        static constexpr std::int64_t DT_SYMINSZ = 0x6ffffdfe;         /* Size of syminfo table (in bytes) */
-        static constexpr std::int64_t DT_SYMINENT = 0x6ffffdff;        /* Entry size of syminfo */
-        static constexpr std::int64_t DT_VALRNGHI = 0x6ffffdff;
-        static constexpr std::int64_t DT_VALNUM = 12;
+        inline static constexpr std::int64_t DT_VALRNGLO = 0x6ffffd00;
+        inline static constexpr std::int64_t DT_GNU_PRELINKED = 0x6ffffdf5;   /* Prelinking timestamp */
+        inline static constexpr std::int64_t DT_GNU_CONFLICTSZ = 0x6ffffdf6;  /* Size of conflict section */
+        inline static constexpr std::int64_t DT_GNU_LIBLISTSZ = 0x6ffffdf7;   /* Size of library list */
+        inline static constexpr std::int64_t DT_CHECKSUM = 0x6ffffdf8;
+        inline static constexpr std::int64_t DT_PLTPADSZ = 0x6ffffdf9;
+        inline static constexpr std::int64_t DT_MOVEENT = 0x6ffffdfa;
+        inline static constexpr std::int64_t DT_MOVESZ = 0x6ffffdfb;
+        inline static constexpr std::int64_t DT_FEATURE_1 = 0x6ffffdfc;       /* Feature selection (DTF_*).  */
+        inline static constexpr std::int64_t DT_POSFLAG_1 = 0x6ffffdfd;       /* Flags for DT_* entries, effecting the following DT_* entry.  */
+        inline static constexpr std::int64_t DT_SYMINSZ = 0x6ffffdfe;         /* Size of syminfo table (in bytes) */
+        inline static constexpr std::int64_t DT_SYMINENT = 0x6ffffdff;        /* Entry size of syminfo */
+        inline static constexpr std::int64_t DT_VALRNGHI = 0x6ffffdff;
+        inline static constexpr std::int64_t DT_VALNUM = 12;
 
         /* DT_* entries which fall between DT_ADDRRNGHI & DT_ADDRRNGLO use the
            Dyn.d_un.d_ptr field of the Elf*_Dyn structure.
 
          If any adjustment is made to the ELF object after it has been
          built these entries will need to be adjusted.  */
-        static constexpr std::int64_t DT_ADDRRNGLO = 0x6ffffe00;
-        static constexpr std::int64_t DT_GNU_HASH = 0x6ffffef5;      /* GNU-style hash table.  */
-        static constexpr std::int64_t DT_TLSDESC_PLT = 0x6ffffef6;
-        static constexpr std::int64_t DT_TLSDESC_GOT = 0x6ffffef7;
-        static constexpr std::int64_t DT_GNU_CONFLICT = 0x6ffffef8;  /* Start of conflict section */
-        static constexpr std::int64_t DT_GNU_LIBLIST = 0x6ffffef9;   /* Library list */
-        static constexpr std::int64_t DT_CONFIG = 0x6ffffefa;        /* Configuration information.  */
-        static constexpr std::int64_t DT_DEPAUDIT = 0x6ffffefb;      /* Dependency auditing.  */
-        static constexpr std::int64_t DT_AUDIT = 0x6ffffefc;         /* Object auditing.  */
-        static constexpr std::int64_t DT_PLTPAD = 0x6ffffefd;        /* PLT padding.  */
-        static constexpr std::int64_t DT_MOVETAB = 0x6ffffefe;       /* Move table.  */
-        static constexpr std::int64_t DT_SYMINFO = 0x6ffffeff;       /* Syminfo table.  */
-        static constexpr std::int64_t DT_ADDRRNGHI = 0x6ffffeff;
-        static constexpr std::int64_t DT_ADDRNUM = 11;
+        inline static constexpr std::int64_t DT_ADDRRNGLO = 0x6ffffe00;
+        inline static constexpr std::int64_t DT_GNU_HASH = 0x6ffffef5;      /* GNU-style hash table.  */
+        inline static constexpr std::int64_t DT_TLSDESC_PLT = 0x6ffffef6;
+        inline static constexpr std::int64_t DT_TLSDESC_GOT = 0x6ffffef7;
+        inline static constexpr std::int64_t DT_GNU_CONFLICT = 0x6ffffef8;  /* Start of conflict section */
+        inline static constexpr std::int64_t DT_GNU_LIBLIST = 0x6ffffef9;   /* Library list */
+        inline static constexpr std::int64_t DT_CONFIG = 0x6ffffefa;        /* Configuration information.  */
+        inline static constexpr std::int64_t DT_DEPAUDIT = 0x6ffffefb;      /* Dependency auditing.  */
+        inline static constexpr std::int64_t DT_AUDIT = 0x6ffffefc;         /* Object auditing.  */
+        inline static constexpr std::int64_t DT_PLTPAD = 0x6ffffefd;        /* PLT padding.  */
+        inline static constexpr std::int64_t DT_MOVETAB = 0x6ffffefe;       /* Move table.  */
+        inline static constexpr std::int64_t DT_SYMINFO = 0x6ffffeff;       /* Syminfo table.  */
+        inline static constexpr std::int64_t DT_ADDRRNGHI = 0x6ffffeff;
+        inline static constexpr std::int64_t DT_ADDRNUM = 11;
 
         /* The versioning entry types.  The next are defined as part of the
            GNU extension.  */
-        static constexpr std::int64_t DT_VERSYM = 0x6ffffff0;
-        static constexpr std::int64_t DT_RELACOUNT = 0x6ffffff9;
-        static constexpr std::int64_t DT_RELCOUNT = 0x6ffffffa;
+        inline static constexpr std::int64_t DT_VERSYM = 0x6ffffff0;
+        inline static constexpr std::int64_t DT_RELACOUNT = 0x6ffffff9;
+        inline static constexpr std::int64_t DT_RELCOUNT = 0x6ffffffa;
 
         /* These were chosen by Sun.  */
-        static constexpr std::int64_t DT_FLAGS_1 = 0x6ffffffb;     /* State flags, see DF_1_* below.  */
-        static constexpr std::int64_t DT_VERDEF = 0x6ffffffc;      /* Address of version definition table */
-        static constexpr std::int64_t DT_VERDEFNUM = 0x6ffffffd;   /* Number of version definitions */
-        static constexpr std::int64_t DT_VERNEED = 0x6ffffffe;     /* Address of table with needed versions */
-        static constexpr std::int64_t DT_VERNEEDNUM = 0x6fffffff;  /* Number of needed versions */
-        static constexpr std::int64_t DT_VERSIONTAGNUM = 16;
+        inline static constexpr std::int64_t DT_FLAGS_1 = 0x6ffffffb;     /* State flags, see DF_1_* below.  */
+        inline static constexpr std::int64_t DT_VERDEF = 0x6ffffffc;      /* Address of version definition table */
+        inline static constexpr std::int64_t DT_VERDEFNUM = 0x6ffffffd;   /* Number of version definitions */
+        inline static constexpr std::int64_t DT_VERNEED = 0x6ffffffe;     /* Address of table with needed versions */
+        inline static constexpr std::int64_t DT_VERNEEDNUM = 0x6fffffff;  /* Number of needed versions */
+        inline static constexpr std::int64_t DT_VERSIONTAGNUM = 16;
 
         /* Sun added these machine-independent extensions in the "processor-specific"
            range.  Be compatible.  */
-        static constexpr std::int64_t DT_AUXILIARY = 0x7ffffffd;  /* Shared object to load before self */
-        static constexpr std::int64_t DT_FILTER = 0x7fffffff;     /* Shared object to get values from */
-        static constexpr std::int64_t DT_EXTRANUM = 3;
+        inline static constexpr std::int64_t DT_AUXILIARY = 0x7ffffffd;  /* Shared object to load before self */
+        inline static constexpr std::int64_t DT_FILTER = 0x7fffffff;     /* Shared object to get values from */
+        inline static constexpr std::int64_t DT_EXTRANUM = 3;
 
         std::int64_t d_tag;       /* Entry type */
         union
@@ -598,52 +598,52 @@ namespace elf
         } d_un;
 
         // DT_FLAGS values
-        static constexpr std::uint64_t DF_ORIGIN = 0x1;       /* Object may use $ORIGIN */
-        static constexpr std::uint64_t DF_SYMBOLIC = 0x2;     /* Symbol resolutions starts from this object */
-        static constexpr std::uint64_t DF_TEXTREL = 0x4;      /* Object contains text relocations (non-writable segment) */
-        static constexpr std::uint64_t DF_BIND_NOW = 0x8;     /* No lazy binding for this object */
-        static constexpr std::uint64_t DF_STATIC_TLS = 0x10;  /* Module uses the static TLS model */
+        inline static constexpr std::uint64_t DF_ORIGIN = 0x1;       /* Object may use $ORIGIN */
+        inline static constexpr std::uint64_t DF_SYMBOLIC = 0x2;     /* Symbol resolutions starts from this object */
+        inline static constexpr std::uint64_t DF_TEXTREL = 0x4;      /* Object contains text relocations (non-writable segment) */
+        inline static constexpr std::uint64_t DF_BIND_NOW = 0x8;     /* No lazy binding for this object */
+        inline static constexpr std::uint64_t DF_STATIC_TLS = 0x10;  /* Module uses the static TLS model */
 
         // DT_FLAGS_1 values - https://github.com/bminor/glibc/blob/42c960a4f1052a71d928a1c554f5d445b00e61f7/elf/elf.h#L992-L1033
-        static constexpr std::uint64_t DF_1_NOW = 0x00000001;         /* Set RTLD_NOW for this object.  */
-        static constexpr std::uint64_t DF_1_GLOBAL = 0x00000002;      /* Set RTLD_GLOBAL for this object.  */
-        static constexpr std::uint64_t DF_1_GROUP = 0x00000004;       /* Set RTLD_GROUP for this object.  */
-        static constexpr std::uint64_t DF_1_NODELETE = 0x00000008;    /* Set RTLD_NODELETE for this object.*/
-        static constexpr std::uint64_t DF_1_LOADFLTR = 0x00000010;    /* Trigger filtee loading at runtime.*/
-        static constexpr std::uint64_t DF_1_INITFIRST = 0x00000020;   /* Set RTLD_INITFIRST for this object*/
-        static constexpr std::uint64_t DF_1_NOOPEN = 0x00000040;      /* Set RTLD_NOOPEN for this object.  */
-        static constexpr std::uint64_t DF_1_ORIGIN = 0x00000080;      /* $ORIGIN must be handled.  */
-        static constexpr std::uint64_t DF_1_DIRECT = 0x00000100;      /* Direct binding enabled.  */
-        static constexpr std::uint64_t DF_1_TRANS = 0x00000200;
-        static constexpr std::uint64_t DF_1_INTERPOSE = 0x00000400;   /* Object is used to interpose.  */
-        static constexpr std::uint64_t DF_1_NODEFLIB = 0x00000800;    /* Ignore default lib search path.  */
-        static constexpr std::uint64_t DF_1_NODUMP = 0x00001000;      /* Object can't be dldump'ed.  */
-        static constexpr std::uint64_t DF_1_CONFALT = 0x00002000;     /* Configuration alternative created.*/
-        static constexpr std::uint64_t DF_1_ENDFILTEE = 0x00004000;   /* Filtee terminates filters search. */
-        static constexpr std::uint64_t DF_1_DISPRELDNE = 0x00008000;  /* Disp reloc applied at build time. */
-        static constexpr std::uint64_t DF_1_DISPRELPND = 0x00010000;  /* Disp reloc applied at run-time.  */
-        static constexpr std::uint64_t DF_1_NODIRECT = 0x00020000;    /* Object has no-direct binding. */
-        static constexpr std::uint64_t DF_1_IGNMULDEF = 0x00040000;
-        static constexpr std::uint64_t DF_1_NOKSYMS = 0x00080000;
-        static constexpr std::uint64_t DF_1_NOHDR = 0x00100000;
-        static constexpr std::uint64_t DF_1_EDITED = 0x00200000;      /* Object is modified after built.  */
-        static constexpr std::uint64_t DF_1_NORELOC = 0x00400000;
-        static constexpr std::uint64_t DF_1_SYMINTPOSE = 0x00800000;  /* Object has individual interposers.  */
-        static constexpr std::uint64_t DF_1_GLOBAUDIT = 0x01000000;   /* Global auditing required.  */
-        static constexpr std::uint64_t DF_1_SINGLETON = 0x02000000;   /* Singleton symbols are used.  */
-        static constexpr std::uint64_t DF_1_STUB = 0x04000000;
-        static constexpr std::uint64_t DF_1_PIE = 0x08000000;
-        static constexpr std::uint64_t DF_1_KMOD = 0x10000000;
-        static constexpr std::uint64_t DF_1_WEAKFILTER = 0x20000000;
-        static constexpr std::uint64_t DF_1_NOCOMMON = 0x40000000;
+        inline static constexpr std::uint64_t DF_1_NOW = 0x00000001;         /* Set RTLD_NOW for this object.  */
+        inline static constexpr std::uint64_t DF_1_GLOBAL = 0x00000002;      /* Set RTLD_GLOBAL for this object.  */
+        inline static constexpr std::uint64_t DF_1_GROUP = 0x00000004;       /* Set RTLD_GROUP for this object.  */
+        inline static constexpr std::uint64_t DF_1_NODELETE = 0x00000008;    /* Set RTLD_NODELETE for this object.*/
+        inline static constexpr std::uint64_t DF_1_LOADFLTR = 0x00000010;    /* Trigger filtee loading at runtime.*/
+        inline static constexpr std::uint64_t DF_1_INITFIRST = 0x00000020;   /* Set RTLD_INITFIRST for this object*/
+        inline static constexpr std::uint64_t DF_1_NOOPEN = 0x00000040;      /* Set RTLD_NOOPEN for this object.  */
+        inline static constexpr std::uint64_t DF_1_ORIGIN = 0x00000080;      /* $ORIGIN must be handled.  */
+        inline static constexpr std::uint64_t DF_1_DIRECT = 0x00000100;      /* Direct binding enabled.  */
+        inline static constexpr std::uint64_t DF_1_TRANS = 0x00000200;
+        inline static constexpr std::uint64_t DF_1_INTERPOSE = 0x00000400;   /* Object is used to interpose.  */
+        inline static constexpr std::uint64_t DF_1_NODEFLIB = 0x00000800;    /* Ignore default lib search path.  */
+        inline static constexpr std::uint64_t DF_1_NODUMP = 0x00001000;      /* Object can't be dldump'ed.  */
+        inline static constexpr std::uint64_t DF_1_CONFALT = 0x00002000;     /* Configuration alternative created.*/
+        inline static constexpr std::uint64_t DF_1_ENDFILTEE = 0x00004000;   /* Filtee terminates filters search. */
+        inline static constexpr std::uint64_t DF_1_DISPRELDNE = 0x00008000;  /* Disp reloc applied at build time. */
+        inline static constexpr std::uint64_t DF_1_DISPRELPND = 0x00010000;  /* Disp reloc applied at run-time.  */
+        inline static constexpr std::uint64_t DF_1_NODIRECT = 0x00020000;    /* Object has no-direct binding. */
+        inline static constexpr std::uint64_t DF_1_IGNMULDEF = 0x00040000;
+        inline static constexpr std::uint64_t DF_1_NOKSYMS = 0x00080000;
+        inline static constexpr std::uint64_t DF_1_NOHDR = 0x00100000;
+        inline static constexpr std::uint64_t DF_1_EDITED = 0x00200000;      /* Object is modified after built.  */
+        inline static constexpr std::uint64_t DF_1_NORELOC = 0x00400000;
+        inline static constexpr std::uint64_t DF_1_SYMINTPOSE = 0x00800000;  /* Object has individual interposers.  */
+        inline static constexpr std::uint64_t DF_1_GLOBAUDIT = 0x01000000;   /* Global auditing required.  */
+        inline static constexpr std::uint64_t DF_1_SINGLETON = 0x02000000;   /* Singleton symbols are used.  */
+        inline static constexpr std::uint64_t DF_1_STUB = 0x04000000;
+        inline static constexpr std::uint64_t DF_1_PIE = 0x08000000;
+        inline static constexpr std::uint64_t DF_1_KMOD = 0x10000000;
+        inline static constexpr std::uint64_t DF_1_WEAKFILTER = 0x20000000;
+        inline static constexpr std::uint64_t DF_1_NOCOMMON = 0x40000000;
 
         /* Flags for the feature selection in DT_FEATURE_1.  */
-        static constexpr std::uint64_t DTF_1_PARINIT = 0x00000001;
-        static constexpr std::uint64_t DTF_1_CONFEXP = 0x00000002;
+        inline static constexpr std::uint64_t DTF_1_PARINIT = 0x00000001;
+        inline static constexpr std::uint64_t DTF_1_CONFEXP = 0x00000002;
 
         /* Flags in the DT_POSFLAG_1 entry effecting only the next DT_* entry.  */
-        static constexpr std::uint64_t DF_P1_LAZYLOAD = 0x00000001;   /* Lazyload following object.  */
-        static constexpr std::uint64_t DF_P1_GROUPPERM = 0x00000002;  /* Symbols from next object are not generally available.  */
+        inline static constexpr std::uint64_t DF_P1_LAZYLOAD = 0x00000001;   /* Lazyload following object.  */
+        inline static constexpr std::uint64_t DF_P1_GROUPPERM = 0x00000002;  /* Symbols from next object are not generally available.  */
     } elf_dynamic;
 
     typedef struct elf_rel
@@ -654,86 +654,86 @@ namespace elf
          * these are the values for i386 and x86_64.
          */
         // https://raw.githubusercontent.com/wiki/hjl-tools/x86-psABI/intel386-psABI-1.1.pdf
-        static constexpr std::uint32_t R_386_NONE = 0;
-        static constexpr std::uint32_t R_386_32 = 1;
-        static constexpr std::uint32_t R_386_PC32 = 2;
-        static constexpr std::uint32_t R_386_GOT32 = 3;
-        static constexpr std::uint32_t R_386_PLT32 = 4;
-        static constexpr std::uint32_t R_386_COPY = 5;
-        static constexpr std::uint32_t R_386_GLOB_DAT = 6;
-        static constexpr std::uint32_t R_386_JUMP_SLOT = 7;
-        static constexpr std::uint32_t R_386_RELATIVE = 8;
-        static constexpr std::uint32_t R_386_GOTOFF = 9;
-        static constexpr std::uint32_t R_386_GOTPC = 10;
-        static constexpr std::uint32_t R_386_TLS_TPOFF = 14;
-        static constexpr std::uint32_t R_386_TLS_IE = 15;
-        static constexpr std::uint32_t R_386_TLS_GOTIE = 16;
-        static constexpr std::uint32_t R_386_TLS_LE = 17;
-        static constexpr std::uint32_t R_386_TLS_GD = 18;
-        static constexpr std::uint32_t R_386_TLS_LDM = 19;
-        static constexpr std::uint32_t R_386_16 = 20;
-        static constexpr std::uint32_t R_386_PC16 = 21;
-        static constexpr std::uint32_t R_386_8 = 22;
-        static constexpr std::uint32_t R_386_PC8 = 23;
-        static constexpr std::uint32_t R_386_TLS_GD_32 = 24;
-        static constexpr std::uint32_t R_386_TLS_GD_PUSH = 25;
-        static constexpr std::uint32_t R_386_TLS_GD_CALL = 26;
-        static constexpr std::uint32_t R_386_TLS_GD_POP = 27;
-        static constexpr std::uint32_t R_386_TLS_LDM_32 = 28;
-        static constexpr std::uint32_t R_386_TLS_LDM_PUSH = 29;
-        static constexpr std::uint32_t R_386_TLS_LDM_CALL = 30;
-        static constexpr std::uint32_t R_386_TLS_LDM_POP = 31;
-        static constexpr std::uint32_t R_386_TLS_LDO_32 = 32;
-        static constexpr std::uint32_t R_386_TLS_IE_32 = 33;
-        static constexpr std::uint32_t R_386_TLS_LE_32 = 34;
-        static constexpr std::uint32_t R_386_TLS_DTPMOD32 = 35;
-        static constexpr std::uint32_t R_386_TLS_DTPOFF32 = 36;
-        static constexpr std::uint32_t R_386_TLS_TPOFF32 = 37;
-        static constexpr std::uint32_t R_386_SIZE32 = 38;
-        static constexpr std::uint32_t R_386_TLS_GOTDESC = 39;
-        static constexpr std::uint32_t R_386_TLS_DESC_CALL = 40;
-        static constexpr std::uint32_t R_386_TLS_DESC = 41;
-        static constexpr std::uint32_t R_386_IRELATIVE = 42;
-        static constexpr std::uint32_t R_386_GOT32X = 43;
+        inline static constexpr std::uint32_t R_386_NONE = 0;
+        inline static constexpr std::uint32_t R_386_32 = 1;
+        inline static constexpr std::uint32_t R_386_PC32 = 2;
+        inline static constexpr std::uint32_t R_386_GOT32 = 3;
+        inline static constexpr std::uint32_t R_386_PLT32 = 4;
+        inline static constexpr std::uint32_t R_386_COPY = 5;
+        inline static constexpr std::uint32_t R_386_GLOB_DAT = 6;
+        inline static constexpr std::uint32_t R_386_JUMP_SLOT = 7;
+        inline static constexpr std::uint32_t R_386_RELATIVE = 8;
+        inline static constexpr std::uint32_t R_386_GOTOFF = 9;
+        inline static constexpr std::uint32_t R_386_GOTPC = 10;
+        inline static constexpr std::uint32_t R_386_TLS_TPOFF = 14;
+        inline static constexpr std::uint32_t R_386_TLS_IE = 15;
+        inline static constexpr std::uint32_t R_386_TLS_GOTIE = 16;
+        inline static constexpr std::uint32_t R_386_TLS_LE = 17;
+        inline static constexpr std::uint32_t R_386_TLS_GD = 18;
+        inline static constexpr std::uint32_t R_386_TLS_LDM = 19;
+        inline static constexpr std::uint32_t R_386_16 = 20;
+        inline static constexpr std::uint32_t R_386_PC16 = 21;
+        inline static constexpr std::uint32_t R_386_8 = 22;
+        inline static constexpr std::uint32_t R_386_PC8 = 23;
+        inline static constexpr std::uint32_t R_386_TLS_GD_32 = 24;
+        inline static constexpr std::uint32_t R_386_TLS_GD_PUSH = 25;
+        inline static constexpr std::uint32_t R_386_TLS_GD_CALL = 26;
+        inline static constexpr std::uint32_t R_386_TLS_GD_POP = 27;
+        inline static constexpr std::uint32_t R_386_TLS_LDM_32 = 28;
+        inline static constexpr std::uint32_t R_386_TLS_LDM_PUSH = 29;
+        inline static constexpr std::uint32_t R_386_TLS_LDM_CALL = 30;
+        inline static constexpr std::uint32_t R_386_TLS_LDM_POP = 31;
+        inline static constexpr std::uint32_t R_386_TLS_LDO_32 = 32;
+        inline static constexpr std::uint32_t R_386_TLS_IE_32 = 33;
+        inline static constexpr std::uint32_t R_386_TLS_LE_32 = 34;
+        inline static constexpr std::uint32_t R_386_TLS_DTPMOD32 = 35;
+        inline static constexpr std::uint32_t R_386_TLS_DTPOFF32 = 36;
+        inline static constexpr std::uint32_t R_386_TLS_TPOFF32 = 37;
+        inline static constexpr std::uint32_t R_386_SIZE32 = 38;
+        inline static constexpr std::uint32_t R_386_TLS_GOTDESC = 39;
+        inline static constexpr std::uint32_t R_386_TLS_DESC_CALL = 40;
+        inline static constexpr std::uint32_t R_386_TLS_DESC = 41;
+        inline static constexpr std::uint32_t R_386_IRELATIVE = 42;
+        inline static constexpr std::uint32_t R_386_GOT32X = 43;
         // https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf
-        static constexpr std::uint32_t R_X86_64_NONE = 0;
-        static constexpr std::uint32_t R_X86_64_64 = 1;
-        static constexpr std::uint32_t R_X86_64_PC32 = 2;
-        static constexpr std::uint32_t R_X86_64_GOT32 = 3;
-        static constexpr std::uint32_t R_X86_64_PLT32 = 4;
-        static constexpr std::uint32_t R_X86_64_COPY = 5;
-        static constexpr std::uint32_t R_X86_64_GLOB_DAT = 6;
-        static constexpr std::uint32_t R_X86_64_JUMP_SLOT = 7;
-        static constexpr std::uint32_t R_X86_64_RELATIVE = 8;
-        static constexpr std::uint32_t R_X86_64_GOTPCREL = 9;
-        static constexpr std::uint32_t R_X86_64_32 = 10;
-        static constexpr std::uint32_t R_X86_64_32S = 11;
-        static constexpr std::uint32_t R_X86_64_16 = 12;
-        static constexpr std::uint32_t R_X86_64_PC16 = 13;
-        static constexpr std::uint32_t R_X86_64_8 = 14;
-        static constexpr std::uint32_t R_X86_64_PC8 = 15;
-        static constexpr std::uint32_t R_X86_64_DTPMOD64 = 16;
-        static constexpr std::uint32_t R_X86_64_DTPOFF64 = 17;
-        static constexpr std::uint32_t R_X86_64_TPOFF64 = 18;
-        static constexpr std::uint32_t R_X86_64_TLSGD = 19;
-        static constexpr std::uint32_t R_X86_64_TLSLD = 20;
-        static constexpr std::uint32_t R_X86_64_DTPOFF32 = 21;
-        static constexpr std::uint32_t R_X86_64_GOTTPOFF = 22;
-        static constexpr std::uint32_t R_X86_64_TPOFF32 = 23;
-        static constexpr std::uint32_t R_X86_64_PC64 = 24;
-        static constexpr std::uint32_t R_X86_64_GOTOFF64 = 25;
-        static constexpr std::uint32_t R_X86_64_GOTPC32 = 26;
-        static constexpr std::uint32_t R_X86_64_GOT64 = 27;
-        static constexpr std::uint32_t R_X86_64_GOTPCREL64 = 28;
-        static constexpr std::uint32_t R_X86_64_GOTPC64 = 29;
-        static constexpr std::uint32_t R_X86_64_GOTPLT64 = 30;
-        static constexpr std::uint32_t R_X86_64_PLTOFF64 = 31;
-        static constexpr std::uint32_t R_X86_64_SIZE32 = 32;
-        static constexpr std::uint32_t R_X86_64_SIZE64 = 33;
-        static constexpr std::uint32_t R_X86_64_GOTPC32_TLSDESC = 34;
-        static constexpr std::uint32_t R_X86_64_TLSDESC_CALL = 35;
-        static constexpr std::uint32_t R_X86_64_TLSDESC = 36;
-        static constexpr std::uint32_t R_X86_64_IRELATIVE = 37;
+        inline static constexpr std::uint32_t R_X86_64_NONE = 0;
+        inline static constexpr std::uint32_t R_X86_64_64 = 1;
+        inline static constexpr std::uint32_t R_X86_64_PC32 = 2;
+        inline static constexpr std::uint32_t R_X86_64_GOT32 = 3;
+        inline static constexpr std::uint32_t R_X86_64_PLT32 = 4;
+        inline static constexpr std::uint32_t R_X86_64_COPY = 5;
+        inline static constexpr std::uint32_t R_X86_64_GLOB_DAT = 6;
+        inline static constexpr std::uint32_t R_X86_64_JUMP_SLOT = 7;
+        inline static constexpr std::uint32_t R_X86_64_RELATIVE = 8;
+        inline static constexpr std::uint32_t R_X86_64_GOTPCREL = 9;
+        inline static constexpr std::uint32_t R_X86_64_32 = 10;
+        inline static constexpr std::uint32_t R_X86_64_32S = 11;
+        inline static constexpr std::uint32_t R_X86_64_16 = 12;
+        inline static constexpr std::uint32_t R_X86_64_PC16 = 13;
+        inline static constexpr std::uint32_t R_X86_64_8 = 14;
+        inline static constexpr std::uint32_t R_X86_64_PC8 = 15;
+        inline static constexpr std::uint32_t R_X86_64_DTPMOD64 = 16;
+        inline static constexpr std::uint32_t R_X86_64_DTPOFF64 = 17;
+        inline static constexpr std::uint32_t R_X86_64_TPOFF64 = 18;
+        inline static constexpr std::uint32_t R_X86_64_TLSGD = 19;
+        inline static constexpr std::uint32_t R_X86_64_TLSLD = 20;
+        inline static constexpr std::uint32_t R_X86_64_DTPOFF32 = 21;
+        inline static constexpr std::uint32_t R_X86_64_GOTTPOFF = 22;
+        inline static constexpr std::uint32_t R_X86_64_TPOFF32 = 23;
+        inline static constexpr std::uint32_t R_X86_64_PC64 = 24;
+        inline static constexpr std::uint32_t R_X86_64_GOTOFF64 = 25;
+        inline static constexpr std::uint32_t R_X86_64_GOTPC32 = 26;
+        inline static constexpr std::uint32_t R_X86_64_GOT64 = 27;
+        inline static constexpr std::uint32_t R_X86_64_GOTPCREL64 = 28;
+        inline static constexpr std::uint32_t R_X86_64_GOTPC64 = 29;
+        inline static constexpr std::uint32_t R_X86_64_GOTPLT64 = 30;
+        inline static constexpr std::uint32_t R_X86_64_PLTOFF64 = 31;
+        inline static constexpr std::uint32_t R_X86_64_SIZE32 = 32;
+        inline static constexpr std::uint32_t R_X86_64_SIZE64 = 33;
+        inline static constexpr std::uint32_t R_X86_64_GOTPC32_TLSDESC = 34;
+        inline static constexpr std::uint32_t R_X86_64_TLSDESC_CALL = 35;
+        inline static constexpr std::uint32_t R_X86_64_TLSDESC = 36;
+        inline static constexpr std::uint32_t R_X86_64_IRELATIVE = 37;
 
         std::uint32_t r_type;    /* Relocation type */
         std::uint32_t r_sym;     /* Symbol index */
