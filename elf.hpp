@@ -1450,7 +1450,7 @@ namespace elf
             return false;
           }
 
-          if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
+          if (this->is_64_bit())
           {
             this->binary_file.seekg(0);
             this->binary_file.read(reinterpret_cast<char *>(&this->header), sizeof(this->header));
@@ -1459,7 +1459,7 @@ namespace elf
               this->last_error = "Failed to read ELF header";
               return false;
             }
-          } else if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS32)
+          } else if (this->is_32_bit())
           {
             ::elf::types::Elf32_Ehdr real_header{0};
             this->binary_file.seekg(0);
@@ -1502,7 +1502,7 @@ namespace elf
           this->binary_file.seekg(static_cast<std::streamoff>(this->header.e_phoff));
           this->program_headers.resize(this->header.e_phnum);
 
-          if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
+          if (this->is_64_bit())
           {
             if (this->header.e_phentsize != sizeof(::elf::types::Elf64_Phdr))
             {
@@ -1558,7 +1558,7 @@ namespace elf
           this->binary_file.seekg(static_cast<std::streamoff>(this->header.e_shoff));
           this->section_headers.resize(this->header.e_shnum);
 
-          if (this->header.e_ident.ei_class == ::elf::elf_ident::ELFCLASS64)
+          if (this->is_64_bit())
           {
             if (this->header.e_shentsize != sizeof(::elf::types::Elf64_Shdr))
             {
