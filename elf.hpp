@@ -971,7 +971,9 @@ namespace elf
           if (
                   !this->read_elf_header() ||
                   !this->read_program_headers() ||
-                  !this->read_section_headers()
+                  !this->read_section_headers() ||
+                  !this->read_init_functions() ||
+                  !this->read_term_functions()
                   )
           {
             return;
@@ -1024,6 +1026,37 @@ namespace elf
         const std::vector<::elf::elf_section_header> &get_section_headers() const
         {
           return this->section_headers;
+        }
+
+        /*
+         * Get a vector of addresses of initialization functions. Addresses
+         * assume the file is loaded at its base address. They are in order
+         * of .preinit_array, .init, .init_array
+         */
+        const std::vector<std::uint64_t> &get_init_functions() const
+        {
+          return this->init_functions;
+        }
+
+        /*
+         * Get a vector of addresses of termination functions. Addresses assume
+         * the file is loaded at its base address. They are in order of
+         * .fini_array (reversed), .fini
+         */
+        const std::vector<std::uint64_t> &get_fini_functions() const
+        {
+          return this->fini_functions;
+        }
+
+        /*
+         * Get the expected base address. This is the virtual address of the
+         * lowest PT_LOAD segment. An executable should be loaded at this
+         * address. Shared libraries can be loaded anywhere as long as the
+         * internal layout and spacing remains the same.
+         */
+        std::uint64_t get_base_address() const
+        {
+          return this->base_address;
         }
 
         /*
@@ -1150,7 +1183,7 @@ namespace elf
             {
               case ::elf::elf_dynamic::DT_STRTAB:
               {
-                dynamic_string_table_offset = dynamic_entry.d_un.d_ptr;
+                dynamic_string_table_offset = dynamic_entry.d_un.d_ptr - this->base_address;
                 break;
               }
               case ::elf::elf_dynamic::DT_STRSZ:
@@ -1160,7 +1193,7 @@ namespace elf
               }
               case ::elf::elf_dynamic::DT_SYMTAB:
               {
-                symbol_table_offset = dynamic_entry.d_un.d_ptr;
+                symbol_table_offset = dynamic_entry.d_un.d_ptr - this->base_address;
                 break;
               }
               case ::elf::elf_dynamic::DT_SYMENT:
@@ -1401,6 +1434,9 @@ namespace elf
         const char *so_name = nullptr;
         std::vector<const char *> needed_libraries;
         std::vector<elf::elf_symbol> dynamic_symbols;
+        std::vector<std::uint64_t> init_functions;
+        std::vector<std::uint64_t> fini_functions;
+        std::uint64_t base_address = 0;
 
         std::vector<std::uint32_t> hash_buckets;
         std::vector<std::uint32_t> hash_chains;
@@ -1541,6 +1577,15 @@ namespace elf
               this->program_headers[i].p_filesz = real_program_headers[i].p_filesz;
               this->program_headers[i].p_memsz = real_program_headers[i].p_memsz;
               this->program_headers[i].p_align = real_program_headers[i].p_align;
+            }
+          }
+
+          this->base_address = 0xFFFFFFFFFFFFFFFF;
+          for (const auto &program_header: this->program_headers)
+          {
+            if (program_header.p_type == ::elf::elf_program_header::PT_LOAD)
+            {
+              this->base_address = std::min(this->base_address, program_header.p_vaddr);
             }
           }
 
@@ -1925,6 +1970,160 @@ namespace elf
                 break;
               }
             }
+          }
+
+          return true;
+        }
+
+        bool read_init_functions()
+        {
+          if (!this->binary_file.is_open())
+          {
+            this->last_error = "Binary file is not open";
+            return false;
+          }
+
+          const auto preinit_array_section_header = std::find_if(this->section_headers.cbegin(), this->section_headers.cend(),
+                                                                 [](const elf::elf_section_header &hdr) {
+                                                                     return std::strcmp(hdr.sh_name_str, ".preinit_array") == 0;
+                                                                 });
+          if (preinit_array_section_header != this->section_headers.cend())
+          {
+            std::size_t preinit_entry_size = this->is_64_bit() ? 8 : 4;
+            if (preinit_array_section_header->sh_size % preinit_entry_size != 0)
+            {
+              this->last_error = "Invalid preinit array size";
+              return false;
+            }
+            std::size_t preinit_entry_count = preinit_array_section_header->sh_size / preinit_entry_size;
+            this->binary_file.seekg(static_cast<std::streamoff>(preinit_array_section_header->sh_offset));
+            if (this->is_64_bit())
+            {
+              this->init_functions.resize(preinit_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(this->init_functions.data()),
+                                     static_cast<std::streamsize>(preinit_array_section_header->sh_size));
+              if (this->binary_file.gcount() != preinit_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read preinit array";
+                return false;
+              }
+            } else
+            {
+              std::vector<std::uint32_t> real_preinit_functions(preinit_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(real_preinit_functions.data()),
+                                     static_cast<std::streamsize>(preinit_array_section_header->sh_size));
+              if (this->binary_file.gcount() != preinit_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read preinit array";
+                return false;
+              }
+              this->init_functions.resize(preinit_entry_count);
+              for (std::size_t i = 0; i < preinit_entry_count; i++)
+              {
+                this->init_functions[i] = real_preinit_functions[i];
+              }
+            }
+          }
+
+          const auto init_section_header = std::find_if(this->section_headers.cbegin(), this->section_headers.cend(),
+                                                        [](const elf::elf_section_header &hdr) {
+                                                            return std::strcmp(hdr.sh_name_str, ".init") == 0;
+                                                        });
+          if (init_section_header != this->section_headers.cend())
+          {
+            this->init_functions.emplace_back(init_section_header->sh_addr);
+          }
+
+          const auto init_array_section_header = std::find_if(this->section_headers.cbegin(), this->section_headers.cend(),
+                                                              [](const elf::elf_section_header &hdr) {
+                                                                  return std::strcmp(hdr.sh_name_str, ".init_array") == 0;
+                                                              });
+          if (init_array_section_header != this->section_headers.cend())
+          {
+            std::size_t init_entry_size = this->is_64_bit() ? 8 : 4;
+            if (init_array_section_header->sh_size % init_entry_size != 0)
+            {
+              this->last_error = "Invalid preinit array size";
+              return false;
+            }
+            std::size_t init_entry_count = init_array_section_header->sh_size / init_entry_size;
+            this->binary_file.seekg(static_cast<std::streamoff>(init_array_section_header->sh_offset));
+            if (this->is_64_bit())
+            {
+              this->init_functions.resize(this->init_functions.size() + init_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(this->init_functions.data() + this->init_functions.size() - init_entry_count),
+                                     static_cast<std::streamsize>(init_array_section_header->sh_size));
+              if (this->binary_file.gcount() != init_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read preinit array";
+                return false;
+              }
+            } else
+            {
+              std::vector<std::uint32_t> real_init_functions(init_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(real_init_functions.data()), static_cast<std::streamsize>(init_array_section_header->sh_size));
+              if (this->binary_file.gcount() != init_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read preinit array";
+                return false;
+              }
+              this->init_functions.reserve(this->init_functions.size() + init_entry_count);
+              std::copy(real_init_functions.cbegin(), real_init_functions.cend(), std::back_inserter(this->init_functions));
+            }
+          }
+
+          return true;
+        }
+
+        bool read_term_functions()
+        {
+          const auto fini_array_section_header = std::find_if(this->section_headers.cbegin(), this->section_headers.cend(),
+                                                              [](const elf::elf_section_header &hdr) {
+                                                                  return std::strcmp(hdr.sh_name_str, ".fini_array") == 0;
+                                                              });
+          if (fini_array_section_header != this->section_headers.cend())
+          {
+            std::size_t fini_entry_size = this->is_64_bit() ? 8 : 4;
+            if (fini_array_section_header->sh_size % fini_entry_size != 0)
+            {
+              this->last_error = "Invalid fini array size";
+              return false;
+            }
+            std::size_t fini_entry_count = fini_array_section_header->sh_size / fini_entry_size;
+            this->binary_file.seekg(static_cast<std::streamoff>(fini_array_section_header->sh_offset));
+            if (this->is_64_bit())
+            {
+              this->fini_functions.resize(fini_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(this->fini_functions.data()),
+                                     static_cast<std::streamsize>(fini_array_section_header->sh_size));
+              if (this->binary_file.gcount() != fini_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read fini array";
+                return false;
+              }
+              std::reverse(this->fini_functions.begin(), this->fini_functions.end());
+            } else
+            {
+              std::vector<std::uint32_t> real_fini_functions(fini_entry_count);
+              this->binary_file.read(reinterpret_cast<char *>(real_fini_functions.data()),
+                                     static_cast<std::streamsize>(fini_array_section_header->sh_size));
+              if (this->binary_file.gcount() != fini_array_section_header->sh_size)
+              {
+                this->last_error = "Failed to read fini array";
+                return false;
+              }
+              this->fini_functions.reserve(fini_entry_count);
+              std::copy(real_fini_functions.crbegin(), real_fini_functions.crend(), std::back_inserter(this->fini_functions));
+            }
+          }
+
+          const auto fini_section_header = std::find_if(this->section_headers.cbegin(), this->section_headers.cend(),
+                                                        [](const elf::elf_section_header &hdr) {
+                                                            return std::strcmp(hdr.sh_name_str, ".fini") == 0;
+                                                        });
+          if (fini_section_header != this->section_headers.cend())
+          {
+            this->fini_functions.emplace_back(fini_section_header->sh_addr);
           }
 
           return true;

@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
  << "  Type: " << header.e_type << "\n" \
  << "  Machine: " << header.e_machine << "\n" \
  << "  Version: " << header.e_version << "\n" \
- << "  Entry point address: " << header.e_entry << "\n" \
- << "  Flags: " << header.e_flags << "\n" \
+ << "  Entry point address: 0x" << std::hex << header.e_entry << std::dec << "\n" \
+ << "  Flags: 0x" << std::hex << header.e_flags << std::dec << "\n" \
  << "  Size of this header: " << header.e_ehsize << "\n" \
  << "  Is 32-bit: " << lib.is_32_bit() << "\n" \
  << "  Is 64-bit: " << lib.is_64_bit() << "\n" \
@@ -44,14 +44,16 @@ int main(int argc, char *argv[])
     const auto &program_header = program_headers[i];
     std::cout \
  << "  [" << i << "]\n" \
- << "    Type: " << program_header.p_type << "\n" \
- << "    Flags: " << program_header.p_flags << "\n" \
- << "    Offset: " << program_header.p_offset << "\n" \
- << "    Virtual address: " << program_header.p_vaddr << "\n" \
- << "    Physical address: " << program_header.p_paddr << "\n" \
- << "    File size: " << program_header.p_filesz << "\n" \
- << "    Memory size: " << program_header.p_memsz << "\n" \
- << "    Alignment: " << program_header.p_align << "\n";
+ << std::hex \
+ << "    Type: 0x" << program_header.p_type << "\n" \
+ << "    Flags: 0x" << program_header.p_flags << "\n" \
+ << "    Offset: 0x" << program_header.p_offset << "\n" \
+ << "    Virtual address: 0x" << program_header.p_vaddr << "\n" \
+ << "    Physical address: 0x" << program_header.p_paddr << "\n" \
+ << "    File size: 0x" << program_header.p_filesz << "\n" \
+ << "    Memory size: 0x" << program_header.p_memsz << "\n" \
+ << "    Alignment: 0x" << program_header.p_align << "\n" \
+ << std::dec;
   }
 
   const auto &section_headers = lib.get_section_headers();
@@ -62,15 +64,17 @@ int main(int argc, char *argv[])
     std::cout \
  << "  [" << i << "] " << section_header.sh_name_str << "\n" \
  << "    Name: " << section_header.sh_name << "\n" \
- << "    Type: " << section_header.sh_type << "\n" \
- << "    Flags: " << section_header.sh_flags << "\n" \
- << "    Address: " << section_header.sh_addr << "\n" \
- << "    Offset: " << section_header.sh_offset << "\n" \
- << "    Size: " << section_header.sh_size << "\n" \
- << "    Link: " << section_header.sh_link << "\n" \
- << "    Info: " << section_header.sh_info << "\n" \
- << "    Address alignment: " << section_header.sh_addralign << "\n" \
- << "    Entry size: " << section_header.sh_entsize << "\n";
+ << std::hex \
+ << "    Type: 0x" << section_header.sh_type << "\n" \
+ << "    Flags: 0x" << section_header.sh_flags << "\n" \
+ << "    Address: 0x" << section_header.sh_addr << "\n" \
+ << "    Offset: 0x" << section_header.sh_offset << "\n" \
+ << "    Size: 0x" << section_header.sh_size << "\n" \
+ << "    Link: 0x" << section_header.sh_link << "\n" \
+ << "    Info: 0x" << section_header.sh_info << "\n" \
+ << "    Address alignment: 0x" << section_header.sh_addralign << "\n" \
+ << "    Entry size: 0x" << section_header.sh_entsize << "\n" \
+ << std::dec;
   }
 
   if (!lib.parse_dynamic_segment())
@@ -87,14 +91,20 @@ int main(int argc, char *argv[])
   }
   std::cout << "  Dynamic symbols count: " << lib.get_dynamic_symbols().size() << "\n";
   std::cout \
-  << "  Relocations without addend: " << lib.get_relocations().size() << "\n" \
-  << "  Relocations with addend: " << lib.get_relocations_with_addend().size() << "\n" \
-  << "  PLT relocations without addend: " << lib.get_plt_relocations().size() << "\n" \
-  << "  PLT relocations with addend: " << lib.get_plt_relocations_with_addend().size() << "\n";
+ << "  Relocations without addend: " << lib.get_relocations().size() << "\n" \
+ << "  Relocations with addend: " << lib.get_relocations_with_addend().size() << "\n" \
+ << "  PLT relocations without addend: " << lib.get_plt_relocations().size() << "\n" \
+ << "  PLT relocations with addend: " << lib.get_plt_relocations_with_addend().size() << "\n";
   if (lib.get_symbol("thisisnotasymbol 1337") != lib.get_dynamic_symbols().cend())
   {
     std::cerr << "Found symbol that should not exist" << std::endl;
     return 1;
   }
-  std::cout << "  FairPlaySAPSign: " << lib.get_symbol("Fc3vhtJDvr")->st_value << "\n";
+  // Shouldn't really dereference std::vector::end() but it's fine for testing
+  std::cout << "  FairPlaySAPSign: " << std::hex << lib.get_symbol("Fc3vhtJDvr")->st_value << std::dec << "\n";
+
+  std::cout << "Misc:\n" \
+ << "  Base Address: 0x" << std::hex << lib.get_base_address() << std::dec << "\n" \
+ << "  Initiation functions count: " << lib.get_init_functions().size() << "\n" \
+ << "  Termination functions count: " << lib.get_fini_functions().size() << "\n";
 }
