@@ -2183,7 +2183,7 @@ namespace elf
           std::advance(current_value, start_idx - this->gnu_hash_omitted_symbols_count);
 
           hash1 &= ~1;
-          for (;; current_symbol++, current_value++)
+          for (; current_symbol != this->dynamic_symbols.cend() && current_value != this->gnu_hash_values.cend(); current_symbol++, current_value++)
           {
             hash2 = *current_value;
 
