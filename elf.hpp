@@ -21,7 +21,6 @@
 #include <vector>
 #include <cstdint>
 #include <variant>
-#include <byteswap.h>
 #include <cstring>
 #include <algorithm>
 
