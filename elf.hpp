@@ -736,7 +736,7 @@ namespace elf
 
         std::uint32_t r_type;    /* Relocation type */
         std::uint32_t r_sym;     /* Symbol index */
-    } __attribute__((packed)) elf_rel;
+    } elf_rel;
 
     typedef struct elf_rela
     {
@@ -745,7 +745,7 @@ namespace elf
         std::uint32_t r_type;    /* Relocation type */
         std::uint32_t r_sym;     /* Symbol index */
         std::int64_t r_addend;   /* Addend */
-    } __attribute__((packed)) elf_rela;
+    } elf_rela;
 
     /*
      * Standard ELF structures
