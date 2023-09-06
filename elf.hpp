@@ -1202,12 +1202,12 @@ namespace elf
               }
               case ::elf::elf_dynamic::DT_SONAME:
               {
-                this->so_name = reinterpret_cast<const char *>(reinterpret_cast<std::uintptr_t>(dynamic_entry.d_un.d_val));
+                this->so_name = reinterpret_cast<const char *>(static_cast<std::uintptr_t>(dynamic_entry.d_un.d_val));
                 break;
               }
               case ::elf::elf_dynamic::DT_NEEDED:
               {
-                this->needed_libraries.emplace_back(reinterpret_cast<const char *>(reinterpret_cast<std::uintptr_t>(dynamic_entry.d_un.d_val)));
+                this->needed_libraries.emplace_back(reinterpret_cast<const char *>(static_cast<std::uintptr_t>(dynamic_entry.d_un.d_val)));
                 break;
               }
             }
